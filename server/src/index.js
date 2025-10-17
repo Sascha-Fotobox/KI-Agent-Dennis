@@ -19,7 +19,7 @@ app.use(cors({ origin: CORS_ORIGIN }));
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const MODEL = process.env.OPENAI_MODEL || "gpt-3.5-turbo";
 
-const knowledgePath = path.join(__dirname, "..", "server", "knowledge.json");
+const knowledgePath = path.join(__dirname, "..", "knowledge.json");
 const knowledge = JSON.parse(fs.readFileSync(knowledgePath, "utf-8"));
 
 const systemPrompt = `Du bist ${knowledge.assistant_name}, der digitale Berater von ${knowledge.brand} aus Kiel.
