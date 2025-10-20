@@ -1,237 +1,444 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { marked } from 'marked'
+// App.tsx
+import React, { useEffect, useMemo, useState } from "react";
+import K from "../knowledge.json"; // Pfad ggf. anpassen: src/knowledge.json o.ä.
 
-type Msg = { role: 'user'|'assistant', content: string }
-type Knowledge = any
+type Knowledge = typeof K;
+type Step = Knowledge["button_flow"]["steps"][number];
 
-const API_BASE = import.meta.env.VITE_API_BASE || ''
+type Selections = {
+  mode?: "Digital" | "Digital & Print";
+  eventType?: string;   // Button-Label mit Emoji
+  guests?: string;      // "0–30 Personen" | ... | "ab 250 Personen"
+  format?: "Postkarte" | "Streifen" | "Großbild";
+  accessories?: {
+    requisiten?: boolean;
+    hintergrund?: boolean;
+    layout?: boolean;
+  };
+  // gespeicherte Textempfehlung nach Gästezahl (für Zusammenfassung)
+  printRecommendation?: string;
+};
 
-export default function App(){
-  const [knowledge, setKnowledge] = useState<Knowledge|null>(null)
-  const [showChat, setShowChat] = useState(false)
-  const [messages, setMessages] = useState<Msg[]>([])
-  const [input, setInput] = useState('')
-  const [flow, setFlow] = useState<{ step:number, subIndex:number, data:any }>({ step: 0, subIndex: 0, data: {} })
-  const messagesRef = useRef<HTMLDivElement>(null)
+type Message = { role: "assistant" | "user"; text: string };
 
-  useEffect(()=>{ fetch(`${API_BASE}/knowledge`).then(r=>r.json()).then(setKnowledge).catch(()=>{}) },[])
-  useEffect(()=>{ messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight }) },[messages])
+const App: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [currentStepId, setCurrentStepId] = useState<number>(1);
+  const [selections, setSelections] = useState<Selections>({
+    accessories: { requisiten: false, hintergrund: false, layout: false },
+  });
+  const [subIndex, setSubIndex] = useState<number>(0); // für Zubehör-Substeps
 
-  const addBot = (content:string)=> setMessages(m=>[...m, {role:'assistant', content}])
-  const addUser = (content:string)=> setMessages(m=>[...m, {role:'user', content}])
+  // Hilfen
+  const stepById = (id: number) => K.button_flow.steps.find((s) => s.id === id);
+  const currentStep = stepById(currentStepId);
 
-  const startGuided = ()=>{
-    setShowChat(true)
-    setFlow({ step: 1, subIndex: 0, data: {} })
-    addBot("Super! Ich begleite dich Schritt für Schritt. Zuerst: Möchtest du die Fotobox 📱 ohne Druck (digital) nutzen oder 🖨️ mit Sofortdruck?")
-  }
-  const startFree = ()=>{ setShowChat(true); addBot("Alles klar! Was möchtest du zur Fotobox wissen?") }
+  const addBot = (text: string) =>
+    setMessages((m) => [...m, { role: "assistant", text }]);
+  const addUser = (text: string) =>
+    setMessages((m) => [...m, { role: "user", text }]);
 
-  async function askLLM(userText?: string){
-    const payload = { messages: [
-      ...messages.map(m=> ({ role: m.role==='assistant'?'assistant':'user', content: m.content })),
-      ...(userText ? [{ role: 'user', content: userText }] : [])
-    ]}
-    const r = await fetch(`${API_BASE}/api/chat`,{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
-    const j = await r.json()
-    if(j.reply) addBot(j.reply); if(j.error) addBot("Fehler: "+j.error)
-  }
+  // Emojis & Zusatzbeispiele von Event-Buttons entfernen → "Geburtstag", "Hochzeit", ...
+  const normalizeEventKey = (label?: string): string => {
+    if (!label) return "";
+    let s = label
+      .replace(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})\s*/u, "")
+      .trim();
+    s = s.replace(/\s*\(z\.\s*B\..*?\)\s*$/i, ""); // Klammerhinweise entfernen
+    return s;
+  };
 
-  function buildSummary(data:any){
-    const items:string[] = []
-    items.push(`Modus: ${data.mode==='digital'?'Digital (Fobi Smart, digitale Nutzung immer inkl.)':'Sofortdruck'}`)
-    if(data.guests) items.push(`Gäste: ${data.guests} (${data.print_recommendation||''})`)
-    if(data.format) items.push(`Druckformat: ${data.format}`)
-    if(data.high_volume) items.push(`Hohe Druckmengen: ${data.high_volume}`)
-    const chosen:string[] = []
-    if(data.requisiten) chosen.push('Requisiten')
-    if(data.hintergrund) chosen.push('Hintergrund')
-    if(data.layout) chosen.push('Individuelles Layout')
-    if(chosen.length) items.push('Zubehör: '+chosen.join(', '))
-    items.push(`Lieferung: 20 km um Kiel inklusive`)
-    return "• "+items.filter(Boolean).join("\n• ")
-  }
+  // App-Start
+  useEffect(() => {
+    // Begrüßung + Step 1
+    const intro =
+      "Hi! Ich begleite dich Schritt für Schritt zur passenden Fotobox. Möchtest du die Fotobox 📱 Digital nutzen oder 🖨️ Digital & Print?";
+    addBot(intro);
+  }, []);
 
-  function onFlowChoice(choice:string){
-    const k = knowledge
-    const st = flow.step
-    const data = { ...flow.data }
+  // Buttons eines Steps (aus Knowledge) generisch rendern
+  const stepButtons = useMemo(() => {
+    return currentStep?.buttons ?? [];
+  }, [currentStep]);
 
-    if(st===1){
-      data.mode = choice.includes("Ohne") ? "digital" : "druck"
-      setFlow({ step: data.mode==='digital' ? 5 : 2, subIndex: 0, data })
-      if(data.mode==='digital'){
-        addBot("Top! Digital mit der Fobi Smart bedeutet unbegrenzte Fotos, Online‑Galerie & QR‑Codes – nachhaltig und flexibel. Lass uns Zubehör wählen.")
-        startSubstep()
+  // Handler für Buttonklicks (deterministisch, IF-basiert)
+  const onChoice = (choice: string) => {
+    addUser(choice);
+
+    // Step 1 – Modus wählen
+    if (currentStepId === 1) {
+      const mode =
+        choice.indexOf("Digital & Print") !== -1 ? "Digital & Print" : "Digital";
+      setSelections((p) => ({ ...p, mode }));
+
+      if (mode === "Digital") {
+        // Direkt zu Zubehör (Step 5); kurzer Vorteilstext
+        addBot(
+          "Top! Digital bedeutet unbegrenzt viele Fotos, QR-Downloads und eine DSGVO-konforme Online-Galerie – nachhaltig und flexibel.\n\nLass uns noch kurz dein Zubehör anschauen."
+        );
+        setCurrentStepId(5);
+        setSubIndex(0);
+        return;
       } else {
-        addBot("Alles klar – mit Sofortdruck. Wie viele Gäste erwartet ihr etwa?")
+        // Mit Druck → Step 2 (Art der Veranstaltung)
+        addBot("Alles klar – mit Sofortdruck. Was wird gefeiert?");
+        setCurrentStepId(2);
+        return;
       }
-      return
     }
 
-    if(st===2){
-      data.guests = choice
-      const rec = k?.button_flow?.steps?.[1]?.recommendations?.[choice] || ""
-      data.print_recommendation = rec
-      addBot(`Danke! Empfehlung: ${rec}. Als Nächstes: Welches Druckformat bevorzugst du?`)
-      setFlow({ step: 3, subIndex: 0, data })
-      return
+    // Step 2 – Art der Veranstaltung
+    if (currentStepId === 2) {
+      const eventType = choice;
+      setSelections((p) => ({ ...p, eventType }));
+
+      const s2 = stepById(2);
+      const rec = s2?.recommendations?.[choice];
+      const bridge =
+        (s2 as any)?.after_reply?.text ||
+        "Klingt gut! Magst du mir sagen, wie viele Gäste ungefähr erwartet werden?";
+      addBot([rec, bridge].filter(Boolean).join("\n\n"));
+
+      // → automatisch Step 3
+      setCurrentStepId(3);
+      return;
     }
 
-    if(st===3){
-      data.format = choice.includes("Postkarten") ? "10x15" : "5x15"
-      if(data.format==='5x15'){
-        addBot("Hinweis: Mit 200 Prints (10×15) erhältst du 400 Fotostreifen, mit 400 Prints entsprechend 800 – ideal für 100–250 Gäste.")
+    // Step 3 – Gästezahl (mit special_contexts)
+    if (currentStepId === 3) {
+      setSelections((p) => ({ ...p, guests: choice }));
+
+      const s3 = stepById(3) as any;
+      const eventKey = normalizeEventKey(selections.eventType);
+      const spec = s3?.special_contexts?.[eventKey]?.[choice];
+      const rec = spec || s3?.recommendations?.[choice] || "";
+      setSelections((p) => ({ ...p, printRecommendation: rec }));
+
+      // Empfehlung anzeigen und Übergang zu Druckformat
+      addBot(
+        [rec, "Als Nächstes: Welches Druckformat wünscht ihr euch?"].join("\n\n")
+      );
+      setCurrentStepId(4);
+      return;
+    }
+
+    // Step 4 – Druckformat
+    if (currentStepId === 4) {
+      const format: Selections["format"] = choice.startsWith("📸")
+        ? "Postkarte"
+        : choice.startsWith("🎞️")
+        ? "Streifen"
+        : "Großbild";
+      setSelections((p) => ({ ...p, format }));
+
+      const s4 = stepById(4) as any;
+      const rec = s4?.recommendations?.[choice] || "";
+      const bridge =
+        s4?.after_reply?.text ||
+        "Super, dann berücksichtige ich dieses Format für deine Preisübersicht am Ende. Lass uns jetzt noch kurz dein Zubehör anschauen.";
+      addBot([rec, bridge].filter(Boolean).join("\n\n"));
+
+      // → Zubehör (Step 5)
+      setCurrentStepId(5);
+      setSubIndex(0);
+      return;
+    }
+
+    // Step 5 – Zubehör (Substeps toggeln)
+    if (currentStepId === 5) {
+      const substeps = (stepById(5) as any)?.substeps ?? [];
+      const idx = subIndex;
+      const sub = substeps[idx];
+
+      // Auswertung Buttons (✅/❌)
+      if (sub) {
+        const key = sub.key as keyof NonNullable<Selections["accessories"]>;
+        const yes = choice.startsWith("✅");
+
+        setSelections((p) => ({
+          ...p,
+          accessories: { ...(p.accessories || {}), [key]: yes },
+        }));
+
+        const confirm = yes ? sub.confirm_yes : sub.confirm_no;
+        if (confirm) addBot(confirm);
       }
-      setFlow({ step: 4, subIndex: 0, data })
-      addBot("Planst du mehr als 400 Prints? Falls ja: Option A) zweites Media‑Kit (Selbstwechsel) oder B) zweites Drucksystem (Printpaket 802). Wenn nein, sag einfach 'nein'.")
-      return
-    }
 
-    if(st===4){
-      const c = choice.toLowerCase()
-      data.high_volume = c.includes('b') ? 'zweites Drucksystem' : (c.includes('a') ? 'zweites Media‑Kit' : 'keine höhere Menge')
-      setFlow({ step: 5, subIndex: 0, data })
-      startSubstep()
-      return
-    }
-
-    if(st===5){
-      // Zubehör Substeps: requisiten -> hintergrund -> layout
-      const substeps = k?.button_flow?.steps?.[4]?.substeps || []
-      const current = substeps[flow.subIndex]
-      if(current){
-        const yes = choice.startsWith("✅")
-        if(current.key==="requisiten"){
-          data.requisiten = yes
-          if(yes) addBot("Super, ich merke Requisiten als Zubehörpaket vor. Das konkrete Themenpaket stimmen wir im Planungsgespräch ab.")
-        }
-        if(current.key==="hintergrund"){
-          data.hintergrund = yes
-          if(yes) addBot("Super, ich merke dir das Hintergrundsystem vor. Motiv wählen wir im Planungsgespräch passend zum Layout.")
-        }
-        if(current.key==="layout"){
-          data.layout = yes
-          if(yes) addBot("Perfekt, ich merke die individuelle Layout-Gestaltung als Zubehörpaket vor. Du erhältst vorab eine Layoutvorschau zur Freigabe.")
-          else addBot("Alles klar, dann verwende ich ein schlichtes Basic‑Layout (weiß, mit einfachem Text).")
-        }
-      }
-      const nextIndex = flow.subIndex + 1
-      if(nextIndex < substeps.length){
-        setFlow({ step: 5, subIndex: nextIndex, data })
-        presentSubstep(nextIndex)
+      // Nächster Substep oder weiter
+      const next = subIndex + 1;
+      if (next < substeps.length) {
+        setSubIndex(next);
+        // Den nächsten Substep-Text „say“ anzeigen
+        const nextSub = substeps[next];
+        if (nextSub?.say) addBot(nextSub.say);
       } else {
-        setFlow({ step: 6, subIndex: 0, data })
-        const summary = buildSummary(data)
-        addBot("Kurzfassung deiner Auswahl:\n" + summary + "\nIch stelle dir jetzt eine transparente Preisübersicht zusammen …")
-        askLLM("Bitte gib eine transparente Preisübersicht NUR JETZT am Ende. Kontext:\n"+summary)
+        // Zubehör abgeschlossen → Step 6 (Zusammenfassung & Preise)
+        setCurrentStepId(6);
+        // Zusammenfassung + Preise
+        const summary = buildSummary(selections);
+        const priceText = buildPriceText(selections, K);
+        addBot(
+          [
+            "Kurze Zusammenfassung deiner Auswahl:",
+            summary,
+            "Transparente Preisübersicht:",
+            priceText,
+          ].join("\n\n")
+        );
       }
-      return
+      return;
     }
-  }
 
-  function startSubstep(){
-    presentSubstep(0)
-  }
-  function presentSubstep(index:number){
-    const s = knowledge?.button_flow?.steps?.[4]?.substeps?.[index]
-    if(!s) return
-    let text = ""
-    if(s.key==='requisiten'){
-      text = "Zu unseren Fotoboxen kannst du Requisiten dazubuchen. Damit sind verschiedene Accessoires und Themen‑Sets gemeint (z. B. Party, Maritim, Gatsby, Sommer, Weihnachten, Halloween, Oktoberfest). Die genaue Auswahl treffen wir im Planungsgespräch."
-    } else if(s.key==='hintergrund'){
-      text = "Ich empfehle in der Regel, einen Hintergrund zu nutzen, besonders wenn es keine schlichte Wand gibt. Die Leinwand ist ca. 2,5×2,5 m – 8–10 Personen passen gut aufs Bild. Es gibt Uni‑Farben, Holz, Blumen, Glitzer und Disco/Party‑Backdrops."
-    } else if(s.key==='layout'){
-      text = "Bei der individuellen Layout‑Gestaltung passe ich das Druckdesign an eure Wünsche/CI an (Schriften, Farben, Anordnung, 1–4 Fotos) inkl. Layoutvorschau. Kosten: 30 €; zweites darauf basierendes Layout +20 €."
+    // Step 6 – fertig (Nothing to choose)
+  };
+
+  // Beim Eintritt in Step 5 den ersten Substep-Text anzeigen
+  useEffect(() => {
+    if (currentStepId === 5) {
+      const substeps = (stepById(5) as any)?.substeps ?? [];
+      if (substeps.length > 0) {
+        const s = substeps[0];
+        if (s?.say) addBot(s.say);
+      } else {
+        // kein Substep → direkt zu Step 6
+        setCurrentStepId(6);
+        const summary = buildSummary(selections);
+        const priceText = buildPriceText(selections, K);
+        addBot(
+          [
+            "Kurze Zusammenfassung deiner Auswahl:",
+            summary,
+            "Transparente Preisübersicht:",
+            priceText,
+          ].join("\n\n")
+        );
+      }
     }
-    addBot(text)
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStepId]);
 
-  async function send(){
-    if(!input.trim()) return
-    const text = input.trim()
-    setInput('')
-    addUser(text)
-    await askLLM(text)
-  }
-
+  // Render
   return (
-    <div className="wrap">
-      <header>
-        <h1>Dennis · KI‑Beratung</h1>
-        <p className="sub">Dein digitaler Berater für die passende Fotobox.</p>
+    <div className="app">
+      <header className="header">
+        <h1>{K.brand} – Assistent „{K.assistant_name}“</h1>
+        <small>{K.privacy_notice}</small>
       </header>
 
-      {!showChat && (
-        <section className="card">
-          <h2>Datenschutzhinweis</h2>
-          <p>{knowledge?.privacy_notice || 'Hinweis: Bitte keine personenbezogenen Daten eingeben.'}</p>
-          <div className="buttons">
-            <button className="primary" onClick={startGuided}>Fotobox‑Beratung starten</button>
-            <button onClick={startFree}>Ich habe eine konkrete Frage</button>
+      <main className="chat">
+        {messages.map((m, i) => (
+          <div key={i} className={`msg ${m.role}`}>
+            <div className="bubble">{m.text}</div>
           </div>
-          <p className="small">Du kannst auch jederzeit frei tippen – Dennis reagiert sofort auf deinen Text.</p>
-        </section>
-      )}
+        ))}
 
-      <section className={"card "+(showChat?'':'hidden')}>
-        <div className="messages" ref={messagesRef}>
-          {messages.map((m,i)=>(
-            <div key={i} className={"msg "+(m.role==='assistant'?'bot':'user')} dangerouslySetInnerHTML={{__html: marked.parse(m.content)}} />
-          ))}
+        {/* Step-UI */}
+        <div className="step">
+          {currentStep?.title && <h2>{currentStep.title}</h2>}
+          {currentStep?.ask && <p className="ask">{currentStep.ask}</p>}
+
+          {/* Bei Step 4 zusätzliche Infos/Wechselintervalle zeigen */}
+          {currentStepId === 4 && (
+            <div className="info">
+              {((stepById(4) as any)?.info || "") && (
+                <p>{(stepById(4) as any).info}</p>
+              )}
+              <ul>
+                <li>{(stepById(4) as any)?.change_intervals?.Postkartenformat}</li>
+                <li>
+                  {(stepById(4) as any)?.change_intervals?.Fotostreifenformat}
+                </li>
+                <li>{(stepById(4) as any)?.change_intervals?.Großbildformat}</li>
+              </ul>
+            </div>
+          )}
+
+          {/* Zubehör: Intro ohne Preise */}
+          {currentStepId === 5 && (stepById(5) as any)?.intro && (
+            <p className="intro">{(stepById(5) as any).intro}</p>
+          )}
+
+          {/* Buttons */}
+          {stepButtons.length > 0 && (
+            <div className="buttons">
+              {stepButtons.map((b: string) => (
+                <button key={b} onClick={() => onChoice(b)}>
+                  {b}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Zubehör-Substep Buttons */}
+          {currentStepId === 5 && renderAccessoryButtons(subIndex, stepById(5) as any, onChoice)}
         </div>
+      </main>
 
-        {/* Flow controls */}
-        {flow.step>0 && (
-          <div className="flow">
-            {flow.step===1 && (
-              <div className="flow-buttons">
-                <button onClick={()=>onFlowChoice('📱 Ohne Druck (digital)')}>📱 Ohne Druck (digital)</button>
-                <button onClick={()=>onFlowChoice('🖨️ Mit Druck (Sofortdruck)')}>🖨️ Mit Druck (Sofortdruck)</button>
-              </div>
-            )}
-            {flow.step===2 && (
-              <div className="flow-buttons">
-                <button onClick={()=>onFlowChoice('Bis 50 Personen')}>Bis 50 Personen</button>
-                <button onClick={()=>onFlowChoice('50–120 Personen')}>50–120 Personen</button>
-                <button onClick={()=>onFlowChoice('Ab 120 Personen')}>Ab 120 Personen</button>
-              </div>
-            )}
-            {flow.step===3 && (
-              <div className="flow-buttons">
-                <button onClick={()=>onFlowChoice('📸 Postkartenformat (10×15 cm)')}>📸 Postkartenformat (10×15 cm)</button>
-                <button onClick={()=>onFlowChoice('🎞️ Fotostreifen (5×15 cm)')}>🎞️ Fotostreifen (5×15 cm)</button>
-              </div>
-            )}
-            {flow.step===4 && (
-              <div className="flow-buttons">
-                <button onClick={()=>onFlowChoice('Option A')}>Option A: zweites Media‑Kit</button>
-                <button onClick={()=>onFlowChoice('Option B')}>Option B: zweites Drucksystem (Printpaket 802)</button>
-                <button onClick={()=>onFlowChoice('nein')}>Nein, max. 400 Prints</button>
-              </div>
-            )}
-            {flow.step===5 && (
-              <div className="flow-buttons">
-                <button onClick={()=>onFlowChoice('✅ Ja')}>✅ Ja</button>
-                <button onClick={()=>onFlowChoice('❌ Nein')}>❌ Nein</button>
-              </div>
-            )}
-            {flow.step===6 && (
-              <div className="tag">Preise werden jetzt transparent genannt.</div>
-            )}
-          </div>
-        )}
-
-        <div className="composer">
-          <textarea value={input} onChange={(e)=>setInput(e.target.value)} placeholder="Schreibe hier deine Nachricht … (Enter zum Senden)"
-            onKeyDown={(e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); }}} />
-          <button className="primary" onClick={send}>Senden</button>
-        </div>
-      </section>
-
-      <footer className="small">
-        DSGVO‑freundlich · Keine personenbezogenen Daten · Lieferung 20 km um Kiel inklusive
+      <footer className="footer">
+        <small>Tonalität: {K.language_tone}</small>
       </footer>
+
+      <style jsx>{`
+        .app { max-width: 900px; margin: 0 auto; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+        .header { padding: 16px 12px; border-bottom: 1px solid #eee; }
+        .chat { padding: 16px 12px; min-height: 60vh; }
+        .msg { display: flex; margin-bottom: 12px; }
+        .msg.assistant { justify-content: flex-start; }
+        .msg.user { justify-content: flex-end; }
+        .bubble { max-width: 80%; padding: 10px 12px; border-radius: 12px; white-space: pre-wrap; }
+        .assistant .bubble { background: #f6f7f8; border: 1px solid #e8eaed; }
+        .user .bubble { background: #dff0ff; border: 1px solid #b6dcff; }
+        .step { padding: 12px; border-top: 1px dashed #eee; }
+        .ask { color: #333; }
+        .buttons { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 8px; margin-top: 10px; }
+        button { padding: 10px 12px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; }
+        button:hover { border-color: #aaa; }
+        .info { background: #fff8e6; border: 1px solid #ffe0a3; padding: 10px 12px; border-radius: 8px; margin: 10px 0; }
+        .intro { margin-top: 6px; font-weight: 500; }
+        .footer { padding: 12px; border-top: 1px solid #eee; color: #666; }
+      `}</style>
     </div>
-  )
+  );
+};
+
+/* ---------- Zubehör Buttons Renderer ---------- */
+function renderAccessoryButtons(
+  subIndex: number,
+  step5: any,
+  onChoice: (choice: string) => void
+) {
+  const substeps = step5?.substeps ?? [];
+  const sub = substeps[subIndex];
+  if (!sub) return null;
+  const btns: string[] = sub.buttons ?? [];
+  return (
+    <div className="buttons">
+      {btns.map((b) => (
+        <button key={b} onClick={() => onChoice(b)}>
+          {b}
+        </button>
+      ))}
+    </div>
+  );
 }
+
+/* ---------- Zusammenfassung ---------- */
+function buildSummary(sel: Selections) {
+  const parts: string[] = [];
+  parts.push(`Modus: ${sel.mode === "Digital" ? "Digital (Fobi Smart, digitale Nutzung inkl.)" : "Digital & Print"}`);
+  if (sel.eventType) parts.push(`Event: ${sel.eventType}`);
+  if (sel.guests) parts.push(`Gäste: ${sel.guests}`);
+  if (sel.format)
+    parts.push(
+      `Druckformat: ${
+        sel.format === "Postkarte"
+          ? "Postkartenformat (10×15)"
+          : sel.format === "Streifen"
+          ? "Fotostreifen (5×15)"
+          : "Großbildformat (15×20)"
+      }`
+    );
+  const acc = sel.accessories || {};
+  const accList: string[] = [];
+  if (acc.requisiten) accList.push("Requisiten");
+  if (acc.hintergrund) accList.push("Hintergrund");
+  if (acc.layout) accList.push("Individuelles Layout");
+  if (accList.length) parts.push(`Zubehör: ${accList.join(", ")}`);
+
+  if (sel.printRecommendation) parts.push(`Empfehlung: ${sel.printRecommendation}`);
+
+  // Hinweise (Umrechungen)
+  parts.push(
+    "Hinweise: 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen; beim Großbildformat entspricht ein Printpaket 200 → 100 Großbild-Prints."
+  );
+
+  return "• " + parts.join("\n• ");
+}
+
+/* ---------- Preislogik (nur am Ende!) ---------- */
+function buildPriceText(sel: Selections, K: Knowledge) {
+  const p = K.pricing;
+  const items: Array<{ label: string; price: number }> = [];
+
+  // Digitalpaket
+  if (sel.mode === "Digital") {
+    items.push({ label: "Digitalpaket (Fobi Smart)", price: p["Digitalpaket (Fobi Smart)"] });
+  }
+
+  // Printpaket (wenn Digital & Print)
+  if (sel.mode === "Digital & Print") {
+    const printItem = recommendPrintPackageFromGuests(sel, K);
+    if (printItem) items.push(printItem);
+
+    // Externes Kundenevent → Sonderhinweis Verbrauchsabrechnung
+    const eventKey = normalizeEventKeyLocal(sel.eventType);
+    if (eventKey === "Externes Kundenevent") {
+      items.push({
+        label:
+          "Hinweis: Bei Messen/Promotions/Recruitingdays erfolgt die Abrechnung nach Verbrauch in 100er-Schritten. Media-Kit + Reserve-Kit werden gestellt.",
+        price: 0,
+      });
+    }
+  }
+
+  // Zubehörpreise (ein Paket inkl.; jedes weitere 30€) → Preise erst hier nennen
+  const acc = sel.accessories || {};
+  const chosen = ["requisiten", "hintergrund", "layout"].filter(
+    (k) => (acc as any)[k]
+  );
+  if (chosen.length > 1) {
+    const extras = chosen.length - 1; // 1 inkl.
+    items.push({
+      label: `Weitere Zubehörpakete (${extras}×)`,
+      price: extras * (K.pricing["Jedes weitere Zubehörpaket"] || 0),
+    });
+  }
+
+  // Summe
+  const sum = items.reduce((a, b) => a + (b.price || 0), 0);
+
+  const lines = items.map((i) =>
+    i.price > 0 ? `• ${i.label}: ${i.price} €` : `• ${i.label}`
+  );
+  lines.push(`\n**Gesamtsumme: ${sum} €**`);
+
+  return lines.join("\n");
+}
+
+function recommendPrintPackageFromGuests(sel: Selections, K: Knowledge) {
+  // Standard-Mapping nach Gästezahl
+  const g = sel.guests;
+  let label = "";
+  if (g === "0–30 Personen") label = "200 Prints (Postkartenformat)";
+  if (g === "30–50 Personen") label = "200 Prints (Postkartenformat)";
+  if (g === "50–120 Personen") label = "400 Prints (Postkartenformat)";
+  if (g === "120–250 Personen") label = "800 Prints (Postkartenformat, 1 Drucksystem)";
+  if (g === "ab 250 Personen") label = ""; // individuell
+
+  if (!label) return null;
+
+  // Preis aus Pricing
+  const price = K.pricing[label as keyof typeof K.pricing];
+  if (price == null) return null;
+
+  return { label, price };
+}
+
+// lokale Kopie (ohne Unicode-RegEx), falls Build-Tool kein u-Flag kann:
+function normalizeEventKeyLocal(label?: string): string {
+  if (!label) return "";
+  let s = label.trim();
+  s = s.replace(/^(\S+\s)/, (m) => (m.match(/^\p{Extended_Pictographic}/u) ? "" : m)); // best effort
+  s = s.replace(/^([^\w]*)(🎂|💍|🎓|🏢|🎪|🎉)\s*/u, ""); // Emojis entfernen (Fallback)
+  s = s.replace(/\s*\(z\.\s*B\..*?\)\s*$/i, "");
+  // Vereinheitliche Keys für special_contexts
+  if (/geburt/i.test(s)) return "Geburtstag";
+  if (/hochzeit/i.test(s)) return "Hochzeit";
+  if (/abschluss/i.test(s)) return "Abschlussball";
+  if (/internes/i.test(s)) return "Internes Mitarbeiterevent";
+  if (/externes/i.test(s)) return "Externes Kundenevent";
+  if (/öffentlich/i.test(s) || /party/i.test(s)) return "Öffentliche Veranstaltung";
+  return s;
+}
+
+export default App;
