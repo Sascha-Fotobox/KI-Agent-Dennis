@@ -39,7 +39,7 @@
       {
         "id": 1,
         "title": "Grundfrage",
-        "ask": "Wie möchtet ihr die Fotobox nutzen?",
+        "ask": "Möchtest du eine rein digitale Fotobox oder zusätzlich eine Printfunktion?",
         "buttons": [
           "📱 Digital",
           "🖨️ Digital & Print"
@@ -48,14 +48,14 @@
       {
         "id": 2,
         "title": "Art der Veranstaltung",
-        "ask": "Was wird gefeiert?",
+        "ask": "Für was für ein Event suchst du eine Fotobox?",
         "buttons": [
           "🎂 Geburtstag",
           "💍 Hochzeit",
           "🎓 Abschlussball",
-          "🏢 Internes Mitarbeiterevent (z. B. Sommerfest, Weihnachtsfeier)",
-          "🎪 Externes Kundenevent (z. B. Messe, Promotion, Recruitingday)",
-          "🎉 Öffentliche Veranstaltung (z. B. Halloweenparty, 80er/90er Party, Tanz in den Mai, Oktoberfest)"
+          "🏢 Internes Mitarbeiterevent\n (z. B. Sommerfest, Weihnachtsfeier)",
+          "🎪 Externes Kundenevent\n (z. B. Messe, Promotion, Recruitingday)",
+          "🎉 Öffentliche Veranstaltung\n (z. B. Halloweenparty, 80er/90er Party, Tanz in den Mai, Oktoberfest)"
         ],
         "recommendations": {
           "🎂 Geburtstag": "Bei Geburtstagen passen unsere Party-Requisiten perfekt – Hüte, Brillen, Schilder usw. Wenn du ein Motto feierst (z. B. 80er, 90er, maritim), kann ich das mit dem Druck-Layout und den Requisiten farblich anpassen.",
