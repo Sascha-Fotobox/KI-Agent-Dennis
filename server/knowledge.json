@@ -25,6 +25,206 @@
       "Ein Zubehörpaket ist inklusive (Requisiten ODER Hintergrundsystem ODER individuelle Layout-Gestaltung)."
     ]
   },
+  "button_flow": {
+    "steps": [
+      {
+        "id": 1,
+        "title": "Grundfrage",
+        "buttons": [
+          "📱 Digital",
+          "🖨️ Digital & Print"
+        ],
+        "notes": "Bei 'Digital' kurz Vorteile nennen, dann zu Zubehör/Abschluss. Bei 'Digital & Print' weiter zu Schritt 2."
+      },
+      {
+        "id": 2,
+        "title": "Art der Veranstaltung",
+        "ask": "Was wird gefeiert?",
+        "buttons": [
+          "🎂 Geburtstag",
+          "💍 Hochzeit",
+          "🎓 Abschlussball",
+          "🏢 Internes Mitarbeiterevent (z. B. Sommerfest, Weihnachtsfeier)",
+          "🎪 Externes Kundenevent (z. B. Messe, Promotion, Recruitingday)",
+          "🎉 Öffentliche Veranstaltung (z. B. Halloweenparty, 80er/90er Party, Tanz in den Mai, Oktoberfest)"
+        ],
+        "recommendations": {
+          "🎂 Geburtstag": "Bei Geburtstagen passen unsere Party-Requisiten perfekt – Hüte, Brillen, Schilder usw. Wenn du ein Motto feierst (z. B. 80er, 90er, maritim …), kann ich das mit dem Druck-Layout oder den Requisiten farblich anpassen. Auch das Druck-Layout kann passend zum Motto gestaltet werden.",
+          "💍 Hochzeit": "Hier empfehle ich meist das Blumen- oder Glitzer-Hintergrundsystem und ein Layout, das an eure Einladung oder Papeterie angelehnt ist. Natürlich mit Aufbau und Abbau am selben Tag – ganz ohne Stress. Die Requisiten stimmen wir thematisch ab (z. B. Vintage, elegant, verspielt).",
+          "🎓 Abschlussball": "Bei Abschlussbällen mache ich es gern etwas unkomplizierter. Die Schüler bekommen von mir immer ein schönes, abgerundetes Paket mit allem, was dazugehört: Requisiten, Hintergrund, Layout-Gestaltung und 800 Fotostreifen. Die 800 Fotostreifen empfehle ich deshalb, weil das einem kompletten Media-Kit entspricht – damit bekommt ihr das maximale Druckerlebnis zum besten Preis. Weniger würde ich bei Abschlussbällen in der Regel nicht ansetzen, da dort meist 200 bis 400 Personen feiern. Sollte es allerdings um einen kleineren Abschlussball gehen, können wir natürlich individuell schauen – etwa 400 Prints im Fotostreifenformat oder 400 Prints im Postkartenformat. Bei größeren Bachelor- oder Masterbällen mit 500 bis 700 Gästen kann eine Betreuung vor Ort sinnvoll sein, um einen reibungslosen Ablauf und schnelle Ausdrucke zu gewährleisten. Das Layout und die Gestaltung stimmen wir immer passend zum Motto oder Stil eures Abschlussballs ab.",
+          "🏢 Internes Mitarbeiterevent (z. B. Sommerfest, Weihnachtsfeier)": "Für interne Firmenfeste kann das Layout an eure CI angepasst werden – z. B. mit Firmenlogo, Farben oder Schriftarten. Sommer-Events eignen sich gut für unsere Sommer-Requisiten, Weihnachtsfeiern für weihnachtliche Sets. Bei mehr als 250 Gästen oder starkem Andrang empfehle ich eine Betreuung, damit jeder schnell sein Foto bekommt.",
+          "🎪 Externes Kundenevent (z. B. Messe, Promotion, Recruitingday)": "Hier lässt sich das Druck-Layout perfekt mit eurer Aktion verbinden – etwa durch QR-Codes zu eurer Website oder Kampagne. Auch Branding-Elemente (Logo, Farbwelt) können integriert werden. Optional kann ein zweiter Drucker sinnvoll sein, um bei hohem Besucherandrang Wartezeiten zu vermeiden.",
+          "🎉 Öffentliche Veranstaltung (z. B. Halloweenparty, 80er/90er Party, Tanz in den Mai, Oktoberfest)": "Hier darf’s auffallen! Je nach Motto gestalte ich Layout und Requisiten passend: Halloween mit Masken und dunklem Design, 80er/90er mit Neonfarben, Oktoberfest mit Holzhintergrund und Wiesn-Accessoires. Auch weihnachtliche oder saisonale Varianten sind möglich."
+        },
+        "after_reply": {
+          "text": "Klingt gut! Magst du mir sagen, wie viele Gäste ungefähr erwartet werden?",
+          "next_step": 3
+        }
+      },
+      {
+        "id": 3,
+        "title": "Gästezahl (ca.)",
+        "ask": "Wie viele Gäste ungefähr?",
+        "buttons": [
+          "0–30 Personen",
+          "30–50 Personen",
+          "50–120 Personen",
+          "120–250 Personen",
+          "ab 250 Personen"
+        ],
+        "recommendations": {
+          "0–30 Personen": "Das ist eine eher kleine Veranstaltung – da reichen in der Regel bis zu 100 Prints locker aus. Wenn du lieber auf Nummer sicher gehen willst, sind 200 Prints eine gute Wahl, damit alle Gäste genügend Fotos bekommen.",
+          "30–50 Personen": "Hier passen 200 Prints erfahrungsgemäß sehr gut. Wenn ihr eher am unteren Rand seid (z. B. 32–35 Personen), können auch 100 Prints ausreichen – aber mit 200 Prints seid ihr auf jeden Fall auf der sicheren Seite, damit niemand zu kurz kommt.",
+          "50–120 Personen": "Für diese Größe empfehle ich 400 Prints. Wenn ihr bei etwa 50–60 Gästen liegt, wären theoretisch auch 200 Prints möglich – aber mit 400 Prints seid ihr für den gesamten Abend gut ausgestattet.",
+          "120–250 Personen": "Bei dieser Größe solltet ihr mit 800 Prints rechnen, um jederzeit genug Material zu haben. Besonders attraktiv ist hier das Fotostreifenformat: Mit 400 Prints im Postkartenformat entstehen automatisch 800 Fotostreifen – perfekt für größere Gruppen.",
+          "ab 250 Personen": "Bei dieser Größe berate ich individuell, weil hier oft zusätzliche Drucker oder Betreuung sinnvoll sind. Das hängt stark von der Veranstaltung ab – bei großen Events können auch deutlich über 1000 Prints entstehen. Das besprechen wir am besten im Detail."
+        },
+        "special_contexts": {
+          "Geburtstag": {
+            "0–30 Personen": "Das ist eine kleine Runde – 100 Prints reichen oft, mit 200 Prints bist du entspannt auf der sicheren Seite. Das Layout gestalten wir passend zu deiner Feier, z. B. mit Farben oder Symbolen des Partymottos.",
+            "30–50 Personen": "Hier passen 200 Prints sehr gut. Wenn ihr eher am unteren Rand seid (z. B. 32–35 Personen), können auch 100 Prints ausreichen – aber mit 200 Prints seid ihr auf der sicheren Seite. Das Layout bauen wir passend zu eurer Geburtstagsfeier, z. B. mit kleinen Motto-Elementen oder einem individuellen Spruch.",
+            "50–120 Personen": "Für diese Größe empfehle ich 400 Prints. Wenn ihr bei etwa 50–60 Gästen liegt, wären theoretisch auch 200 Prints möglich – aber mit 400 Prints seid ihr über den gesamten Abend bestens versorgt. 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen. Das Layout stimmen wir passend zur Party ab, damit alles stimmig wirkt.",
+            "120–250 Personen": "Bei dieser Größe solltet ihr mit 800 Prints rechnen, um genug Material zu haben – egal ob Postkarten- oder Fotostreifenformat. 400 Prints im Postkartenformat ergeben automatisch 800 Fotostreifen. Das Layout gestalten wir individuell, z. B. mit dem Partymotto oder besonderen Symbolen des Geburtstags.",
+            "ab 250 Personen": "Bei so großen Feiern berate ich individuell, damit Ablauf und Druckmenge perfekt passen. Natürlich gestalten wir auch hier das Layout abgestimmt auf dein Event."
+          },
+          "Hochzeit": {
+            "0–30 Personen": "Oft reichen 100 Prints, 200 Prints sind die entspanntere Variante. Das Layout passe ich auf Wunsch an eure Papeterie oder euer Farbschema an.",
+            "30–50 Personen": "200 Prints bewähren sich hier. Wenn ihr eher am unteren Rand seid (z. B. 32–35 Gäste), können 100 Prints genügen – mit 200 Prints seid ihr auf der sicheren Seite. Das Layout wird harmonisch an eure Papeterie, Einladung oder Hochzeitsfarben angepasst.",
+            "50–120 Personen": "Empfehlung: 400 Prints. Bei 50–60 Gästen wären 200 möglich, aber mit 400 Prints seid ihr den ganzen Abend stressfrei. 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen. Das Layout gestalte ich passend zu eurer Hochzeit – elegant, modern oder romantisch.",
+            "120–250 Personen": "Empfehlung: 800 Prints oder 400 Prints im Postkartenformat, die automatisch 800 Fotostreifen ergeben. Das Layout stimme ich farblich und stilistisch mit eurer Hochzeit ab, damit alles zusammenpasst.",
+            "ab 250 Personen": "Hier stimmen wir die Druckmenge individuell ab, evtl. mit zusätzlichem Drucker oder Betreuung. Das Layout gestalte ich selbstverständlich abgestimmt auf euer Hochzeitskonzept."
+          },
+          "Abschlussball": {
+            "0–30 Personen": "Bei so wenigen Gästen ist ein Abschlussball eher selten – aber falls doch, reichen 200 Prints im Fotostreifenformat völlig aus. Das wäre dann ein kompaktes Setup mit gleichem Spaßfaktor. Das Layout gestalten wir natürlich passend zu eurer Veranstaltung.",
+            "30–50 Personen": "Bei einem kleineren Abschlussball mit 30–50 Personen empfehle ich rund 200 Prints im Fotostreifenformat. Das reicht locker aus und spart Material. Das Layout wird individuell nach dem Motto oder Stil eures Abschlussballs gestaltet.",
+            "50–120 Personen": "Bei einem kleineren Abschlussball mit 50–120 Gästen empfehle ich rund 400 Prints – entweder im Postkartenformat oder im Fotostreifenformat. Das ist die perfekte Menge, ohne dass etwas verschwendet wird. 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen. Das Layout passe ich an das Abschlussmotto oder eure Farben an.",
+            "120–250 Personen": "Das ist die klassische Größe für viele Abibälle – hier sind 800 Fotostreifen ideal. Das entspricht einem kompletten Media-Kit und sorgt für das volle Druckerlebnis zum besten Preis. Das Layout und die Gestaltung stimmen wir passend zum Motto oder Stil eures Abschlussballs ab.",
+            "ab 250 Personen": "Bei größeren Abschlussbällen mit mehr als 250 Gästen kann eine Betreuung vor Ort sinnvoll sein, damit alles reibungslos läuft. Wir schauen uns das individuell an, je nach Ablauf und Location. Das Layout wird selbstverständlich abgestimmt auf das Design eures Abschlussballs."
+          },
+          "Internes Mitarbeiterevent": {
+            "0–30 Personen": "100 Prints sind meist genug, 200 Prints, wenn viel gedruckt werden soll. Das Layout kann gern im Stil eurer Firma gestaltet werden, z. B. mit Logo oder Unternehmensfarben.",
+            "30–50 Personen": "200 Prints sind ein guter Richtwert. Ich gestalte das Layout gern in eurer CI – mit Logo, Schriftarten oder Motto des Events.",
+            "50–120 Personen": "400 Prints sind ideal, damit jeder schnell zu seinem Ausdruck kommt. 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen. Das Layout passe ich auf Wunsch an euer Corporate Design oder Eventmotto an.",
+            "120–250 Personen": "Hier empfehle ich 800 Prints oder 400 Prints im Postkartenformat, die automatisch 800 Fotostreifen ergeben. Bei starkem Andrang ist eine Betreuung sinnvoll. Das Layout gestalten wir im Stil eurer Firma oder des Anlasses.",
+            "ab 250 Personen": "Bei größeren Events planen wir individuell, z. B. mit zusätzlichem Drucker oder Betreuung. Das Layout baue ich im Look & Feel eures Unternehmens auf."
+          },
+          "Externes Kundenevent": {
+            "allgemein": "Bei Messen, Promotions oder Recruitingdays arbeite ich grundsätzlich mit einer Abrechnung nach Verbrauch. Ich packe standardmäßig ein volles Media-Kit in die Fotobox und bringe ein Reserve-Kit mit, falls viel gedruckt wird. Abgerechnet wird ganz fair nach tatsächlichem Verbrauch in 100er-Schritten – egal, wie viele Besucher vor Ort sind. So bleibt ihr flexibel, ohne zu viel im Voraus zu zahlen. Das Layout gestalte ich im Look eurer Marke oder Kampagne, mit Logo, QR-Code oder Claim – ganz nach Wunsch.",
+            "Feiern_mit_Partycharakter": "Wenn es sich eher um ein Mitarbeiterevent oder eine Feier mit Partycharakter handelt, gelten unsere Standardpakete wie bei anderen Veranstaltungen: 200, 400 oder 800 Prints, je nach Gästezahl und Nutzung. 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen. Das Layout stimme ich individuell auf eure Marke oder den Anlass ab."
+          },
+          "Öffentliche Veranstaltung": {
+            "0–30 Personen": "100–200 Prints reichen bei kurzen Events meist aus. Das Layout gestalte ich passend zum Motto, z. B. Halloween, 80er/90er oder Oktoberfest.",
+            "30–50 Personen": "200 Prints sind ein guter Standardwert. Das Layout passe ich an das Thema der Veranstaltung an – gerne auffällig und farbenfroh.",
+            "50–120 Personen": "400 Prints sind erfahrungsgemäß ideal. Für kurze, intensive Phasen eignen sich auch Fotostreifen, da damit doppelt so viele Ausdrucke entstehen. 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen. Das Layout stimme ich thematisch ab, damit es perfekt zum Event passt.",
+            "120–250 Personen": "800 Prints oder 400 Prints im Postkartenformat, die automatisch 800 Fotostreifen ergeben, sind für große Partys optimal. Das Layout wird individuell ans Motto oder die Location angepasst.",
+            "ab 250 Personen": "Hier planen wir individuell – bei großem Andrang ggf. mit Betreuung oder zweitem Drucker. Das Layout setze ich passend zum Motto oder Eventdesign um."
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Druckformat",
+        "condition": "nur bei Druck",
+        "ask": "Welches Druckformat wünscht ihr euch?",
+        "buttons": [
+          "📸 Postkartenformat (10×15 cm)",
+          "🎞️ Fotostreifen (5×15 cm)",
+          "🖼️ Großbildformat (15×20 cm)"
+        ],
+        "info": "Die Abrechnung erfolgt immer auf Basis des Postkartenformats. Das Printpaket 200 entspricht dabei 200 Prints im Postkartenformat, 400 Fotostreifen oder 100 Prints im Großbildformat. Das Fotostreifenformat entspricht also dem Postkartenformat mal 2, das Großbildformat entspricht etwa 50 % des Postkartenformats.",
+        "strip_hint": "Mit 200 Prints im Postkartenformat lassen sich 400 Fotostreifen umsetzen, mit 400 Prints entsprechend 800 Fotostreifen – ideal für Veranstaltungen mit 120–250 Personen.",
+        "change_intervals": {
+          "Postkartenformat": "Nach jeweils 400 Prints muss das Druckmaterial gewechselt werden.",
+          "Fotostreifenformat": "Nach jeweils 800 Fotostreifen muss das Druckmaterial gewechselt werden.",
+          "Großbildformat": "Nach jeweils 200 Prints muss das Druckmaterial gewechselt werden."
+        },
+        "recommendations": {
+          "📸 Postkartenformat (10×15 cm)": "Das Postkartenformat ist der absolute Klassiker und eignet sich perfekt für Feiern mit Partycharakter – egal ob Hochzeit, Geburtstag oder Firmenfeier. Hier passen mehrere Gäste bequem auf ein Foto, und das Layout wirkt schön großflächig und klar. Es ist das Standardformat für alle unsere Printpakete.",
+          "🎞️ Fotostreifen (5×15 cm)": "Das Fotostreifenformat ist besonders beliebt bei Hochzeiten, Geburtstagen oder Abschlussbällen. Es ist die kostengünstigste Variante, um viele Ausdrucke zu erzeugen, denn aus 200 Prints im Postkartenformat entstehen automatisch 400 Fotostreifen. Die Streifen lassen sich perfekt in Gästebücher einkleben oder einfach in der Tasche mitnehmen – eine tolle Erinnerung für jeden Gast.",
+          "🖼️ Großbildformat (15×20 cm)": "Dieses Format eignet sich vor allem für Messen, Promotions oder Recruitingdays. Durch die größere Fläche bleibt genug Platz für Logos, QR-Codes oder Werbebotschaften. Es ist weniger für Veranstaltungen mit Partycharakter geeignet, da es mehr Material verbraucht und das Druckmaterial bereits nach 200 Prints gewechselt werden muss. Auf Wunsch kann ich das Layout hier so gestalten, dass eure Marke oder Botschaft optimal zur Geltung kommt."
+        },
+        "after_reply": {
+          "text": "Super, dann berücksichtige ich dieses Format für deine Preisübersicht am Ende. Lass uns jetzt noch kurz dein Zubehör anschauen.",
+          "next_step": 5
+        }
+      },
+      {
+        "id": 5,
+        "title": "Zubehör",
+        "intro": "Ein Zubehörpaket ist immer inklusive – du kannst zwischen Requisiten, einem Hintergrundsystem oder einer individuellen Layout-Gestaltung wählen. Lass uns das kurz gemeinsam durchgehen, damit alles perfekt zu deinem Event passt.",
+        "substeps": [
+          {
+            "key": "requisiten",
+            "label": "Requisiten",
+            "say": "Zu unseren Fotoboxen kannst du Requisiten dazubuchen. Damit sind verschiedene Accessoires und Themen-Sets gemeint, die für besonders lustige, kreative oder stilvolle Fotos sorgen – etwa Hüte, Brillen, Schilder oder thematische Accessoires passend zu eurer Feier. Die genaue Auswahl des Sets erfolgt später im Planungsgespräch, damit alles perfekt zu eurer Feier passt.",
+            "themes": [
+              "🎉 Party-Set: Bunte Hüte, Riesenbrillen, Polizei- und Kapitänsmützen, Luftgitarre, Bilderrahmen",
+              "⚓ Maritim: Matrosenmützen, Rettungsring, Ruderreifen, Pfeife",
+              "💃 Gatsby/20er-Jahre: Zylinder, Federboa, Handschuhe, Zigarrenattrappen",
+              "🌴 Sommerparty: Flamingos, Palmen, Strohhüte, Blumenketten",
+              "🎅 Weihnachten: Nikolausmützen, Geweihe, Schals",
+              "🎃 Halloween: Masken, Hüte, Spinnen, Kürbisaccessoires",
+              "🍺 Oktoberfest: Bayerische Hüte, Maßkrüge, Wiesn-Accessoires"
+            ],
+            "buttons": [
+              "✅ Ja, Requisiten gewünscht",
+              "❌ Nein, ohne Requisiten"
+            ],
+            "confirm_yes": "Super, ich merke Requisiten als Zubehörpaket vor. Das konkrete Themenpaket stimmen wir im Planungsgespräch ab."
+          },
+          {
+            "key": "hintergrund",
+            "label": "Hintergrundsystem",
+            "say": "Ich empfehle in der Regel, einen Hintergrund zu nutzen, weil die Fotos dadurch ruhiger und hochwertiger wirken. Die Leinwand ist ca. 2,5×2,5 m groß – da passen 8–10 Personen gut aufs Bild. So schaffen wir einen einheitlichen Look und vermeiden störende Hintergründe.",
+            "variants": [
+              "🎨 Unifarbene Hintergründe: Weiß, Grau, Blau",
+              "🌲 Holzwände: hell, weiß oder dunkel – teils mit Lichterketten",
+              "🌸 Blumenhintergründe: zwei Rosenwände und ein Rosen-Vorhang",
+              "✨ Glitzer: Gold, Silber oder Lila",
+              "💿 Disco/Party: Pailletten (silber/gold) und bunter Disco-Backdrop"
+            ],
+            "buttons": [
+              "✅ Ja, Hintergrund gewünscht",
+              "❌ Nein, ohne Hintergrund"
+            ],
+            "confirm_yes": "Super, ich merke dir das Hintergrundsystem vor. Motiv wählen wir im Planungsgespräch passend zum Layout."
+          },
+          {
+            "key": "layout",
+            "label": "Individuelle Layout-Gestaltung",
+            "say": "Bei der individuellen Layout-Gestaltung geht es um das Design deiner Ausdrucke. Dabei richte ich mich nach dem Stil deiner Veranstaltung – also z. B. nach der Einladung, dem Farbschema oder dem Corporate Design. Schriftarten, Farben und Anordnung können wir komplett anpassen, und du bekommst vorab eine Layoutvorschau zur Freigabe.",
+            "options": [
+              "🎨 Design nach Vorlage (Einladungen, Logo, Firmen-CI)",
+              "🖋️ Eigene Schriftarten & Farben",
+              "📸 Flexible Fotoanordnung (1–4 Bilder)",
+              "💡 Layoutvorschau zur Freigabe"
+            ],
+            "buttons": [
+              "✅ Ja, individuelles Layout gewünscht",
+              "❌ Nein, Basic-Layout reicht aus"
+            ],
+            "confirm_yes": "Perfekt, ich merke die individuelle Layout-Gestaltung als Zubehörpaket vor. Du erhältst vorab eine Layoutvorschau zur Freigabe.",
+            "confirm_no": "Alles klar, dann verwende ich ein schlichtes Basic-Layout (weiß, mit einfachem Text)."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Zusammenfassung & Preise",
+        "text": "Erst jetzt Preise nennen."
+      }
+    ]
+  },
+  "pricing": {
+    "Digitalpaket (Fobi Smart)": 350,
+    "Jedes weitere Zubehörpaket": 30,
+    "200 Prints (Postkartenformat)": 100,
+    "400 Prints (Postkartenformat)": 150,
+    "800 Prints (Postkartenformat, 1 Drucksystem)": 250,
+    "800 Prints (Postkartenformat, 2 Drucksysteme – Printpaket 802)": 280,
+    "Gala-Paket": 80,
+    "Betreuung vor Ort (€/h)": 50
+  },
   "language_tone": "Deutsch, freundlich, klar, kompetent – wie Sascha es selbst erklären würde.",
   "gdpr": {
     "collect_only_general": true,
