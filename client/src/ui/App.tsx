@@ -26,6 +26,7 @@ type Selections = {
 };
 
 /** ---------- Konstanten ---------- */
+const SECOND_LAYOUT_FEE = 20;
 const BASE_PRICE = 350;
 
 const PRINT_PRICES: Record<Exclude<PrintPkg, null>, number> = {
@@ -204,7 +205,7 @@ export default function App() {
     return PRINT_PRICES[sel.printPackage];
   }, [sel.mode, sel.printPackage]);
 
-  const total = useMemo(() => BASE_PRICE + printCost + accessoriesCost, [printCost, accessoriesCost]);
+  const total = useMemo(() => BASE_PRICE + printCost + accessoriesCost, [printCost, accessoriesCost]) + (sel.format === "Postkarte & Streifen" ? SECOND_LAYOUT_FEE : 0);
   // Sichtbarkeitslogik (progressiver Flow)
   const showEvent = !!sel.mode;
   const showGuests = sel.mode === "Digital & Print" && !!sel.eventType;
@@ -354,7 +355,7 @@ return (
             <div className="sectionTitle">Druckformat</div>
             <p>Welches Druckformat wünschst du dir?</p>
             <div className="btnrow wrap">
-              {(["Postkarte", "Streifen", "Großbild"] as const).map((f) => (
+              {(["Postkarte","Streifen","Postkarte & Streifen","Großbild"] as const).map((f) => (
                 <button
                   key={f}
                   className={sel.format === f ? "active" : ""}
@@ -451,6 +452,12 @@ return (
                 <span>{`Printpaket ${sel.printPackage}`}</span>
                 <b>{formatCurrency(PRINT_PRICES[sel.printPackage])}</b>
               </div>
+              {sel.format === "Postkarte & Streifen" && (
+                <div className="sumrow">
+                  <span>zweites Layout (zwei Druckformate)</span>
+                  <b>{formatCurrency(SECOND_LAYOUT_FEE)}</b>
+                </div>
+              )}
             </>
           )}
 
