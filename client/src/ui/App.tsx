@@ -172,14 +172,16 @@ const App: React.FC = () => {
 if (currentStepId === 35) {
   const num = parseInt((choice.match(/\d+/) || [])[0] || "0", 10) as 100 | 200 | 400 | 800;
   setSelections((p) => ({ ...p, selectedPrints: num }));
+
   addBot("Alles klar. Als Nächstes: Welches Druckformat möchtest du?");
   setCurrentStepId(4);
   return;
 }
 ));
-  addBot("Alles klar. Als Nächstes: Wie viele Prints möchtest du insgesamt?");
-  setCurrentStepId(selections.mode === "Digital & Print" ? 35 : 4);
+  addBot("Alles klar. Als Nächstes: Welches Druckformat möchtest du?");
+  setCurrentStepId(4);
   return;
+}
 }
 // Schritt 4 – Druckformat
     if (currentStepId === 4) {
@@ -289,61 +291,22 @@ if (currentStepId === 35) {
     return (
       <div className="app">
         <header className="header">
-          <h1>FOBI Fotobox – Assistent</h1>
-        </header>
-        <main className="chat">
-          <div className="msg assistant">
-            <div className="bubble">Knowledge wird geladen …</div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-if (consent === "unknown") {
-  return (
-    <ConsentGate
-      brand={K.brand}
-      noticeText={K.privacy_notice || "Bitte Datenschutzhinweis lesen."}
-      privacyLink={(K as any).privacy_link}
-      versionKey={versionKey}
-      onAccept={() => setConsent("accepted")}
-      onDecline={() => setConsent("declined")}
-    />
-  );
-}
-
-if (consent === "declined") {
-  return (
-    <div className="app">
-      <ConsentDeclined
-        versionKey={versionKey}
-        onAcceptNow={() => setConsent("accepted")}
-        notice={
-          "Völlig verständlich, dass du nicht zustimmen möchtest. " +
-          "Ohne Einwilligung können wir diesen Chat nicht anbieten. " +
-          "Wenn du es dir anders überlegst, kannst du unten zustimmen."
-        }
-      />
+  <div className="brand">
+    <img src={logoUrl} alt="FOBI Fotobox Logo" className="brand-logo" width={44} height={44} />
+    <div className="brand-txt">
+      <div className="brand-title">{K.brand} – Assistent „{K.assistant_name}“</div>
+      <small className="brand-sub">{K.privacy_notice}</small>
     </div>
-  );
-}
-
-
-
-  const current = stepById(currentStepId);
-  const buttons: string[] = (currentStepId === 35)
-  ? ["100 Prints", "200 Prints", "400 Prints", "800 Prints"]
-  : (currentStepId === 4 && current?.buttons ? [...current.buttons, "🧩 Postkarten- und Fotostreifenformat (vor Ort wählbar)"] : (current?.buttons ?? []));
-
-  return (
-    <div className="app">
-      <header className="header">
-        <h1>
-          {K.brand} – Assistent „{K.assistant_name}“
-        </h1>
-        <small>{K.privacy_notice}</small>
-      </header>
+  </div>
+  <button
+    className="restart-btn"
+    data-testid="restart-chat"
+    title="Chat neu starten"
+    onClick={restartAll}
+  >
+    ↻ Neu starten
+  </button>
+</header>
 
       <main className="chat">
         {messages.map((m, i) => (
