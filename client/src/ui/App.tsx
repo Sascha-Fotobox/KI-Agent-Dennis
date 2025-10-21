@@ -10,7 +10,7 @@ type Knowledge = {
 };
 
 type Mode = "Digital" | "Digital & Print" | undefined;
-type Format = "Postkarte" | "Streifen" | "Großbild" | undefined;
+type Format = "Postkarte" | "Streifen" | "Postkarte & Streifen" | "Großbild" | undefined;
 type PrintPkg = "100" | "200" | "400" | "800" | "802" | null;
 type AccessoryKey = "Requisiten" | "Hintergrund" | "Layout" | "Gala-Paket" | "Audio-Gästebuch";
 
