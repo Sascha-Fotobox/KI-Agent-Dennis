@@ -1,4 +1,4 @@
-// src/ui/App.tsx (repaired minimal version)
+// src/ui/App.tsx (prints as desired outputs + pricing for print packages)
 import React, { useEffect, useMemo, useState } from "react";
 
 type Knowledge = any;
@@ -8,7 +8,9 @@ type Selections = {
   mode?: "Digital" | "Digital & Print";
   eventType?: string;
   guests?: string;
-  format?: "Postkarte" | "Streifen" | "Großbild";
+  // desired final outputs (units depend on format)
+  prints?: 100 | 200 | 400 | 800;
+  format?: "Postkarte" | "Streifen" | "Beide";
   accessories?: { requisiten?: boolean; hintergrund?: boolean; layout?: boolean };
   printRecommendation?: string;
 };
@@ -17,6 +19,8 @@ type Message = { role: "assistant" | "user"; text: string };
 
 const GITHUB_RAW =
   "https://raw.githubusercontent.com/Sascha-Fotobox/KI-Agent-Dennis/main/public/knowledge.json";
+
+const STEP_PRINTS = 34;
 
 export default function App() {
   const [K, setK] = useState<Knowledge | null>(null);
@@ -78,6 +82,15 @@ export default function App() {
     setCurrentStepId(1);
   }, [K]);
 
+  // Helpers
+  const postcardToStrips = (postcardPrints: number) => postcardPrints * 2;
+  const effectivePostcardPackage = (prints: number, format: Selections["format"]) => {
+    if (format === "Postkarte" || format === "Beide") return prints;
+    if (format === "Streifen") return Math.ceil(prints / 2);
+    return prints;
+  };
+
+  // Preiszeilen berechnen (inkl. Printpaket + Layout-Logik)
   const priceLines = useMemo(() => {
     if (!K) return [];
     const pricing = K.pricing || {};
@@ -86,6 +99,18 @@ export default function App() {
     // Grundpaket (immer enthalten)
     if (pricing["Digitalpaket (Fobi Smart)"] != null) {
       lines.push({ label: "Digitalpaket (Fobi Smart)", amount: pricing["Digitalpaket (Fobi Smart)"] });
+    }
+
+    // Printpaket (wenn ausgewählt)
+    if (selections.prints && selections.format) {
+      const effPkg = effectivePostcardPackage(selections.prints, selections.format);
+      const pkgLabel = `Printpaket ${effPkg}`;
+      const price = pricing[pkgLabel];
+      if (typeof price === "number") {
+        lines.push({ label: pkgLabel, amount: price });
+      } else {
+        lines.push({ label: `${pkgLabel} (Preis in knowledge.json hinterlegen)`, amount: 0 });
+      }
     }
 
     // Zubehörlogik: 1 Paket inklusive, weitere kostenpflichtig
@@ -99,9 +124,12 @@ export default function App() {
       });
     }
 
-    // Grobe Druckkosten – nur wenn „Digital & Print“ gewählt, ohne Mengen-Automatik
-    if (selections.mode === "Digital & Print") {
-      // Optionen werden später konkretisiert; hier kein Auto-Mapping des Empfehlungstexts.
+    // Zweites Drucklayout bei "Beide" Formate (+20 €, gleiches Basisdesign)
+    if (selections.format === "Beide" && pricing["Zusätzliches Drucklayout (gleiches Designbasis)"] != null) {
+      lines.push({
+        label: "Zweites Drucklayout (gleiches Design, anderes Format)",
+        amount: pricing["Zusätzliches Drucklayout (gleiches Designbasis)"],
+      });
     }
 
     return lines;
@@ -130,7 +158,7 @@ export default function App() {
       return;
     }
 
-    // Schritt 3 – Gästezahl → Empfehlungstext
+    // Schritt 3 – Gästezahl → Empfehlungstext + NEUER Schritt (Prints wählen)
     if (currentStepId === 3) {
       setSelections((p) => ({ ...p, guests: choice }));
       const s3 = stepById(3) as any;
@@ -138,23 +166,80 @@ export default function App() {
       const spec = s3?.special_contexts?.[eventKey]?.[choice];
       const rec = spec || s3?.recommendations?.[choice] || "";
       setSelections((p) => ({ ...p, printRecommendation: rec }));
-      addBot([rec, stepById(4)?.ask ?? "Welches Druckformat?"].join("\n\n"));
+
+      const printsAsk = [
+        rec,
+        "Wie viele Prints möchtest du tatsächlich buchen?",
+        "Wähle 100, 200, 400 oder 800 (als **finale Ausgabemenge**).",
+        "Hinweis: 1 Postkarte = 2 Fotostreifen. Mindestabnahme bei Streifen: **200 Fotostreifen**.",
+      ].join("\n\n");
+      addBot(printsAsk);
+      setCurrentStepId(STEP_PRINTS);
+      return;
+    }
+
+    // NEUER Schritt: Prints wählen (100/200/400/800)
+    if (currentStepId === STEP_PRINTS) {
+      const num = parseInt(choice.replace(/[^0-9]/g, ""), 10) as 100 | 200 | 400 | 800;
+      const valid: number[] = [100, 200, 400, 800];
+      const selected = (valid.includes(num) ? num : 200) as 100 | 200 | 400 | 800;
+      setSelections((p) => ({ ...p, prints: selected }));
+
+      // Weiter zu Format (Original Schritt 4), aber mit erweitertem Text/Buttons
+      const s4 = stepById(4) as any;
+      const formatIntro = [
+        s4?.title ? `**${s4.title}**` : "Druckformat",
+        "Wähle das Format:",
+        "• Postkarte (10×15 cm) – klassisch und beliebt",
+        "• Fotostreifen (5×15 cm) – 2 Streifen pro Postkarte",
+        "• Beide Formate – Gäste wählen vor Ort am Touchscreen",
+      ].join("\n");
+      addBot([formatIntro, s4?.ask ?? ""].filter(Boolean).join("\n\n"));
       setCurrentStepId(4);
       return;
     }
 
-    // Schritt 4 – Druckformat
+    // Schritt 4 – Format (mit 'Beide' Option + Streifen-Minimum)
     if (currentStepId === 4) {
-      const f: Selections["format"] = choice.includes("Streifen")
-        ? "Streifen"
-        : choice.includes("Groß")
-        ? "Großbild"
-        : "Postkarte";
-      setSelections((p) => ({ ...p, format: f }));
+      let fmt: Selections["format"] = "Postkarte";
+      if (/streifen/i.test(choice)) fmt = "Streifen";
+      if (/beide|beides/i.test(choice)) fmt = "Beide";
 
-      // Nächster Schritt: Zubehör
+      // Enforce min 200 Streifen, wenn fmt=Streifen & prints=100
+      if (fmt === "Streifen" && (selections.prints || 0) < 200) {
+        // Upgrade to 200 (strips), which equals 100 postcards? No: selections.prints are desired outputs (strips now).
+        // We enforce at least 200 desired outputs for strips.
+        setSelections((p) => ({ ...p, prints: 200, format: fmt }));
+        addBot("Hinweis: Mindestabnahme bei Fotostreifen sind **200 Streifen**. Ich habe deine Auswahl von 100 auf **200** angehoben.");
+      } else {
+        setSelections((p) => ({ ...p, format: fmt }));
+      }
+
+      const chosen = fmt === "Streifen"
+        ? `${(selections.prints ?? 0) < 200 ? 200 : selections.prints} Fotostreifen`
+        : fmt === "Postkarte"
+        ? `${selections.prints} Postkarten`
+        : `${selections.prints} Postkarten-Äquivalent (Mix)`;
+
+      const effPkg = effectivePostcardPackage(selections.prints || 200, fmt);
+      const info: string[] = [];
+      if (fmt === "Streifen") {
+        const strips = (selections.prints && selections.prints >= 200) ? selections.prints : 200;
+        info.push(`Du hast **${strips} Fotostreifen** gewählt. (2 Streifen = 1 Postkarte)`);
+        info.push(`Abrechnungseinheit: **Printpaket ${effPkg}** (Postkarten-Äquivalent).`);
+      }
+      if (fmt === "Postkarte") {
+        info.push(`Du hast **${selections.prints} Postkarten** gewählt.`);
+        info.push(`Abrechnungseinheit: **Printpaket ${effPkg}**.`);
+      }
+      if (fmt === "Beide") {
+        info.push("Gäste können vor Ort **Postkarte ODER Fotostreifen** wählen.");
+        info.push(`Regel: Wir rechnen immer das **größere Postkarten-Paket** ab → hier: **Printpaket ${effPkg}**.`);
+        info.push("Zusätzlich wird ein **zweites Drucklayout** benötigt (gleiches Design, anderes Format): **+20 €**.");
+      }
+
       const s5 = stepById(5) as any;
-      addBot([s5?.ask ?? "Möchtet ihr Zubehör?", "Wählt gern mehrere aus."].join("\n\n"));
+      addBot([info.join("\n"), s5?.ask ?? "Möchtet ihr Zubehör hinzubuchen?"].filter(Boolean).join("\n\n"));
       setCurrentStepId(5);
       return;
     }
@@ -178,15 +263,47 @@ export default function App() {
     setCurrentStepId(6);
     const s6 = stepById(6) as any;
 
+    const prints = selections.prints || 200;
+    const effPkg = effectivePostcardPackage(prints, selections.format || "Postkarte");
+    const stripsInfo = selections.format === "Streifen" ? `↔️ Entspricht **${prints} Fotostreifen** = **${effPkg} Postkarten-Paket**.` : undefined;
+
     // Preise nur am Ende nennen, wenn policy das verlangt
     if (K?.policy?.prices_at_end) {
       const priceTextLines = [
         "💶 Preise (Übersicht):",
         ...priceLines.map((l) => `• ${l.label}: ${l.amount.toFixed(2)} €`),
-        `—\nGesamtsumme (vorbehaltlich genauer Druckwahl): ${total.toFixed(2)} €`,
+        `—\nGesamtsumme: ${total.toFixed(2)} €`,
       ];
+
+      // Hinweis, falls Printpaket-Preise noch 0 sind
+      const pkgLabel = `Printpaket ${effPkg}`;
+      const pkgPrice = K?.pricing?.[pkgLabel];
+      const pkgWarn = (typeof pkgPrice !== "number" || pkgPrice === 0)
+        ? `⚠️ Bitte Preis für **${pkgLabel}** in der Datei **public/knowledge.json** setzen (derzeit 0 €).`
+        : undefined;
+
+      const layoutWarn = selections.format === "Beide" and K?.pricing?.["Zusätzliches Drucklayout (gleiches Designbasis)"] === 0
+        ? "⚠️ Bitte Preis für **Zweites Drucklayout** auf >0 € setzen."
+        : undefined;
+
+      const summaryLines = [
+        `🖨️ Ausgewählte Menge: **${prints}** (als finale Ausgabemenge)`,
+        selections.format ? `📐 Format: **${selections.format}**` : `📐 Format: —`,
+        stripsInfo,
+        `🧾 Abrechnungseinheit: **Printpaket ${effPkg}** (Postkarten-Äquivalent).`,
+        `🖼️ Drucklayout: 1 Layout inkl. Zweites Layout (gleiches Design, anderes Format): **+20 €**. Komplett neues zusätzliches Layout: **+50 €**.`,
+        `ℹ️ 1 Postkarte = 2 Fotostreifen.`,
+        pkgWarn,
+        layoutWarn
+      ].filter(Boolean) as string[];
+
       const info = s6?.info?.map((i: any) => `ℹ️ ${i.text}`).join("\n") || "";
-      addBot([s6?.ask ?? "Zusammenfassung & Preise", priceTextLines.join("\n"), info].join("\n\n"));
+      addBot([
+        s6?.ask ?? "Zusammenfassung & Preise",
+        summaryLines.join("\n"),
+        priceTextLines.join("\n"),
+        info
+      ].join("\n\n"));
     } else {
       addBot(s6?.ask ?? "Zusammenfassung");
     }
@@ -214,6 +331,30 @@ export default function App() {
 
   const step = stepById(currentStepId);
 
+  const renderButtons = () => {
+    if (currentStepId === STEP_PRINTS) {
+      const options = ["100", "200", "400", "800"];
+      return options.map((o) => (
+        <button key={o} onClick={() => handleChoice(o)}>{o}</button>
+      ));
+    }
+    if (currentStepId === 4) {
+      const buttons = [
+        "Postkarte (10×15 cm)",
+        "Fotostreifen (5×15 cm)",
+        "Beide Formate (vor Ort wählbar)"
+      ];
+      return buttons.map((b) => (
+        <button key={b} onClick={() => handleChoice(b)}>{b}</button>
+      ));
+    }
+    return Array.isArray((step as any)?.buttons)
+      ? (step as any).buttons.map((b: string) => (
+          <button key={b} onClick={() => handleChoice(b)}>{b}</button>
+        ))
+      : null;
+  };
+
   return (
     <div className="app">
       <div className="header"><strong>{K.brand} – {K.assistant_name}</strong></div>
@@ -225,21 +366,31 @@ export default function App() {
           </div>
         ))}
 
-        {step && (
+        {step || currentStepId === STEP_PRINTS ? (
           <div className="step">
-            {step.title && <div className="ask"><strong>{step.title}</strong></div>}
-            <div className="ask">{step.ask}</div>
-            <div className="buttons">
-              {Array.isArray(step.buttons) &&
-                step.buttons.map((b: string) => (
-                  <button key={b} onClick={() => handleChoice(b)}>{b}</button>
-                ))}
-              {currentStepId === 5 && (
-                <button onClick={goNextFromAccessories}>Weiter</button>
-              )}
-            </div>
+            {currentStepId === STEP_PRINTS ? (
+              <>
+                <div className="ask"><strong>Printmenge wählen</strong></div>
+                <div className="ask">
+                  Bitte wähle 100, 200, 400 oder 800 **finale Ausgaben**.
+                  <br/>Hinweis: 1 Postkarte = 2 Fotostreifen (min. 200 Streifen).
+                </div>
+                <div className="buttons">{renderButtons()}</div>
+              </>
+            ) : (
+              <>
+                {(step as any)?.title && <div className="ask"><strong>{(step as any).title}</strong></div>}
+                <div className="ask">{(step as any)?.ask}</div>
+                <div className="buttons">{renderButtons()}</div>
+                {currentStepId === 5 && (
+                  <div className="buttons" style={{ marginTop: 10 }}>
+                    <button onClick={goNextFromAccessories}>Weiter</button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="footer">

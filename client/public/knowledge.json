@@ -7,7 +7,13 @@
   },
   "pricing": {
     "Digitalpaket (Fobi Smart)": 350,
-    "Jedes weitere Zubehörpaket": 30
+    "Jedes weitere Zubehörpaket": 30,
+    "Zusätzliches Drucklayout (gleiches Designbasis)": 20,
+    "Zusätzliches Drucklayout (komplett neues Design)": 50,
+    "Printpaket 100": 0,
+    "Printpaket 200": 0,
+    "Printpaket 400": 0,
+    "Printpaket 800": 0
   },
   "button_flow": {
     "steps": [
