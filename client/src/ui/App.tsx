@@ -1,5 +1,5 @@
 // src/ui/App.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 type Knowledge = any;
 type Step = any;
@@ -18,16 +18,6 @@ type Message = { role: "assistant" | "user"; text: string };
 // GitHub RAW hat Priorität (damit Knowledge ohne Redeploy aktualisiert werden kann)
 const GITHUB_RAW =
   "https://raw.githubusercontent.com/Sascha-Fotobox/KI-Agent-Dennis/main/public/knowledge.json";
-
-// Feste Kapitel-Überschriften (unabhängig vom Knowledge-Text)
-const STEP_HEADERS: Record<number, string> = {
-  1: "Digital oder Digital & Print",
-  2: "Veranstaltungsart",
-  3: "Veranstaltungsgröße",
-  4: "Druckformat",
-  5: "Zubehör",
-  6: "Zusammenfassung & Preise",
-};
 
 const App: React.FC = () => {
   const [K, setK] = useState<Knowledge | null>(null);
@@ -66,7 +56,6 @@ const App: React.FC = () => {
     })();
   }, []);
 
-  // Simple Helpers
   const addBot = (text: string) => setMessages((m) => [...m, { role: "assistant", text }]);
   const addUser = (text: string) => setMessages((m) => [...m, { role: "user", text }]);
   const stepById = (id: number): Step | undefined =>
@@ -92,33 +81,12 @@ const App: React.FC = () => {
       {
         role: "assistant",
         text:
-          "Moin! Gerne begleite ich dich Schritt für Schritt zur deiner individuellen Fotobox.\n\nMöchtest du die Fotobox 📱 Digital nutzen oder 🖨️ Digital & Print?",
+          "Moin! Gerne begleite ich dich Schritt für Schritt zur deiner ividuellen Fotobox. \n\nMöchtest du die Fotobox 📱 Digital nutzen oder 🖨️ Digital & Print?",
       },
     ]);
     setCurrentStepId(1);
     setSubIndex(0);
     setSelections({ accessories: { requisiten: false, hintergrund: false, layout: false } });
-  }, [K]);
-
-  // THEME: liest optionale Farben aus knowledge.json und setzt CSS-Variablen
-  useEffect(() => {
-    if (!K) return;
-    const theme = (K as any).theme || {};
-    const r = document.documentElement;
-    const setVar = (name: string, val?: string) => {
-      if (typeof val === "string" && val.trim()) r.style.setProperty(name, val);
-    };
-    setVar("--bg", theme.bg);
-    setVar("--card", theme.card);
-    setVar("--text", theme.text);
-    setVar("--muted", theme.muted);
-    setVar("--brand", theme.brand);
-    setVar("--accent", theme.accent);
-    setVar("--btn-bg", theme.buttonBg);
-    setVar("--btn-text", theme.buttonText);
-    setVar("--btn-hover", theme.buttonHover);
-    setVar("--bubble-assistant", theme.bubbleAssistant);
-    setVar("--bubble-user", theme.bubbleUser);
   }, [K]);
 
   const onChoice = (choice: string) => {
@@ -130,13 +98,13 @@ const App: React.FC = () => {
       setSelections((p) => ({ ...p, mode }));
       if (mode === "Digital") {
         addBot(
-          "Alles klar!\n\nDigital kannst du unbegrenzt viele Fotos aufnehmen. Diese kannst du per QR-Download direkt an der Fotobox herunterladen und im Nachgang der Veranstaltung erhältst du eine Online-Galerie – nachhaltig und flexibel.\n\nLass uns nun schauen, welches Zubehör du dir zur Fotobox wünschst."
+          "Alles klar! \n\nDigital kannst du immer unbegrenzt viele Fotos aufnehmen. Diese kannst du per QR-Download direkt an der Fotobox herunterladen und im Nachgang der Veranstaltung erhälst du eine Online-Galerie – nachhaltig und flexibel.\n\nLass uns nun schauen, welches Zubehör du dir zur Fotobox wünschst."
         );
         setCurrentStepId(5);
         setSubIndex(0);
         return;
       } else {
-        addBot("Alles klar – mit Sofortdruck soll es sein.\n\nZur nächsten Frage:\nWas für eine Veranstaltung ist denn geplant?");
+        addBot("Alles klar – mit Sofortdruck soll es sein. \n\nZur nächsten Frage: \nWas für eine Veranstaltung ist den geplant?");
         setCurrentStepId(2);
         return;
       }
@@ -149,7 +117,7 @@ const App: React.FC = () => {
       const rec = s2?.recommendations?.[choice] || "";
       const bridge =
         s2?.after_reply?.text ||
-        "Klingt gut!\n\nMagst du mir sagen, wie viele Gäste ungefähr erwartet werden? Hieran kann ich dir beim Druck eine Printmenge empfehlen.";
+        "Klingt gut! \n\nMagst du mir sagen, wie viele Gäste ungefähr erwartet werden? Hieran kann ich dir beim Druck eine Printmenge empfehlen";
       addBot([rec, bridge].filter(Boolean).join("\n\n"));
       setCurrentStepId(3);
       return;
@@ -163,7 +131,7 @@ const App: React.FC = () => {
       const spec = s3?.special_contexts?.[eventKey]?.[choice];
       const rec = spec || s3?.recommendations?.[choice] || "";
       setSelections((p) => ({ ...p, printRecommendation: rec }));
-      addBot([rec, "Als Nächstes:\nWelches Druckformat wünschst du dir denn?"].join("\n\n"));
+      addBot([rec, "Als Nächstes: \nWelches Druckformat wünschst du dir denn?"].join("\n\n"));
       setCurrentStepId(4);
       return;
     }
@@ -180,7 +148,7 @@ const App: React.FC = () => {
       const rec = s4?.recommendations?.[choice] || "";
       const bridge =
         s4?.after_reply?.text ||
-        "Super, dann berücksichtige ich dieses Format für deine Preisübersicht am Ende.\n\nLass uns jetzt noch kurz schauen, welches Zubehör du dir wünschst.\nÜbrigens: Ein Zubehör ist immer inklusive!";
+        "Super, dann berücksichtige ich dieses Format für deine Preisübersicht am Ende. \n\nLass uns jetzt noch kurz schauen, welches Zubehör du dir wünschst. \nÜbrigens: Ein Zubehör ist immer inklusive!";
       addBot([rec, bridge].filter(Boolean).join("\n\n"));
       setCurrentStepId(5);
       setSubIndex(0);
@@ -209,7 +177,7 @@ const App: React.FC = () => {
       } else {
         setCurrentStepId(6);
         const summary = buildSummary(selections);
-        const priceText = buildPriceText(selections, K!);
+        const priceText = buildPriceText(selections, K);
         addBot(
           ["Kurze Zusammenfassung deiner Auswahl:", summary, "Transparente Preisübersicht:", priceText].join(
             "\n\n"
@@ -231,23 +199,17 @@ const App: React.FC = () => {
     }
   }, [currentStepId, K]);
 
-  // Fehler-/Ladezustände
   if (kError) {
     return (
       <div className="app">
-        <header className="header">
-          <div className="brand">
-            <img className="logo" src="/logo.svg" alt="Logo" />
-            <div className="brand-meta">
-              <h1>FOBI Fotobox – Assistent</h1>
-              <small>Knowledge konnte nicht geladen werden. Details: {kError}</small>
-            </div>
-          </div>
-        </header>
+        <header className="header">\n        <div className="brand">\n          <img className="logo" src={(K as any)?.logo_url || "/logo.svg"} alt="Logo" />\n          <div className="brand-meta">
+          <h1>FOBI Fotobox – Assistent</h1>
+                  </div>\n        </div>\n      </header>
         <main className="chat">
           <div className="msg assistant">
             <div className="bubble">
               <strong>Fehler beim Laden der Knowledge-Datei.</strong>
+              {"\n"}Details: {kError}
               {"\n"}Der Assistent versucht zuerst GitHub RAW zu laden. Prüfe, ob die Datei dort öffentlich
               erreichbar ist.
             </div>
@@ -260,15 +222,9 @@ const App: React.FC = () => {
   if (!K) {
     return (
       <div className="app">
-        <header className="header">
-          <div className="brand">
-            <img className="logo" src="/logo.svg" alt="Logo" />
-            <div className="brand-meta">
-              <h1>FOBI Fotobox – Assistent</h1>
-              <small>Knowledge wird geladen …</small>
-            </div>
-          </div>
-        </header>
+        <header className="header">\n        <div className="brand">\n          <img className="logo" src={(K as any)?.logo_url || "/logo.svg"} alt="Logo" />\n          <div className="brand-meta">
+          <h1>FOBI Fotobox – Assistent</h1>
+                  </div>\n        </div>\n      </header>
         <main className="chat">
           <div className="msg assistant">
             <div className="bubble">Knowledge wird geladen …</div>
@@ -283,20 +239,13 @@ const App: React.FC = () => {
 
   return (
     <div className="app">
-      {/* HEADER */}
-      <header className="header">
-        <div className="brand">
-          <img className="logo" src={(K as any)?.logo_url || "/logo.svg"} alt="Logo" />
-          <div className="brand-meta">
-            <h1>
-              {K.brand} – Assistent „{K.assistant_name}“
-            </h1>
-            <small>{K.privacy_notice}</small>
-          </div>
-        </div>
-      </header>
+      <header className="header">\n        <div className="brand">\n          <img className="logo" src={(K as any)?.logo_url || "/logo.svg"} alt="Logo" />\n          <div className="brand-meta">
+        <h1>
+          {(K.brand || "Fobi Fotobox")} – Assistent „{K.assistant_name}“
+        </h1>
+        <small>{K.privacy_notice}</small>
+                </div>\n        </div>\n      </header>
 
-      {/* CHAT */}
       <main className="chat">
         {messages.map((m, i) => (
           <div key={i} className={`msg ${m.role}`}>
@@ -304,13 +253,10 @@ const App: React.FC = () => {
           </div>
         ))}
 
-        {/* Kapitel-Karte */}
-        <div className="rule" />
         <div className="step">
-          <h2>{STEP_HEADERS[currentStepId] || current?.title}</h2>
+          {current?.title && <h2>{current.title}</h2>}
           {current?.ask && <p className="ask">{current.ask}</p>}
 
-          {/* Zusatzinfos für Format */}
           {currentStepId === 4 && (
             <div className="info">
               {(stepById(4) as any)?.info && <p>{(stepById(4) as any).info}</p>}
@@ -322,7 +268,6 @@ const App: React.FC = () => {
             </div>
           )}
 
-          {/* Haupt-Buttons */}
           {buttons.length > 0 && (
             <div className="buttons">
               {buttons.map((b) => (
@@ -333,21 +278,17 @@ const App: React.FC = () => {
             </div>
           )}
 
-          {/* Substep-Buttons (Zubehör) */}
           {currentStepId === 5 &&
             renderAccessoryButtons(subIndex, stepById(5) as any, onChoice)}
         </div>
       </main>
 
-      {/* FOOTER */}
       <footer className="footer">
         <small>Tonalität: {K.language_tone}</small>
       </footer>
     </div>
   );
 };
-
-// ---------- Rendering-Helfer ----------
 
 function renderAccessoryButtons(
   subIndex: number,
@@ -404,11 +345,20 @@ function buildSummary(sel: Selections) {
   return "• " + parts.join("\n• ");
 }
 
+
 function priceOf(K: any, label: string): number {
   const p = K?.pricing?.[label];
   if (typeof p === "number") return p;
   console.warn("Preis fehlt in knowledge.pricing für:", label);
   return 0;
+}
+
+function answerByTitle(answers: any, title: string) {
+  for (const k of Object.keys(answers||{})) {
+    const a = answers[k];
+    if (a && typeof a === 'object' && (a.title === title || a.ask === title)) return a;
+  }
+  return null;
 }
 
 function buildPriceText(sel: Selections, K: Knowledge) {
@@ -481,5 +431,6 @@ function normalizeEventKeyLocal(label?: string): string {
   if (/öffentlich|party/i.test(s)) return "Öffentliche Veranstaltung";
   return s;
 }
+
 
 export default App;

@@ -1,70 +1,3 @@
-
-:root{
-  --bg:#232321;
-  --card:#111823;
-  --text:#ffffff;
-  --muted:#9fb2ca;
-  --brand:#ccb63f;     /* Primärfarbe (anpassbar) */
-  --accent:#ccb63f;    /* Akzentfarbe (anpassbar) */
-  --btn-bg:#2b2a25;
-  --btn-text:#e7ecf3;
-  --btn-hover:#3a392f;
-  --bubble-assistant:#2a2a25;
-  --bubble-user:#33322c;
-}
-
-*{box-sizing:border-box}
-html,body,#root{height:100%}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-}
-
-.app{ display:flex; flex-direction:column; min-height:100%; }
-.header{ padding:16px 20px; background:linear-gradient(180deg, rgba(43,43,41,.65), rgba(43,43,41,0)); box-shadow: 0 1px 0 rgba(204,182,63,.25) inset; border-bottom:1px solid rgba(255,255,255,.06); }
-.header h1{ margin:0 0 6px 0; font-size:20px; font-weight:700; letter-spacing:.2px; }
-.header small{ color:var(--muted); line-height:1.4; }
-
-.chat{ padding:18px; display:flex; flex-direction:column; gap:14px; }
-.msg .bubble{ padding:14px; border-radius:14px; line-height:1.5; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
-.msg.assistant .bubble{ background:var(--bubble-assistant); }
-.msg.user .bubble{ background:var(--bubble-user); }
-
-.step{ background:var(--card); /* anthracite */ border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:16px; margin-top:6px; box-shadow: 0 8px 24px rgba(0,0,0,.22); }
-.step h2{ margin:0 0 8px 0; font-size:18px; }
-.step .ask{ margin:0 0 12px 0; color:var(--muted) }
-
-/* 3 Buttons pro Zeile – immer */
-.buttons{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap:12px;
-  margin-top:8px;
-}
-
-.buttons button{
-  background:var(--btn-bg);
-  color:var(--btn-text);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  padding:12px 10px;
-  font-size:15px;
-  line-height:1.3;
-  white-space:normal; min-width:0;
-  word-break:break-word;
-  cursor:pointer;
-  transition:transform .06s ease, background .15s ease, border-color .15s ease;
-}
-.buttons button:hover{ background:var(--btn-hover); border-color:#ccb63f; box-shadow:0 0 0 2px rgba(204,182,63,.12) inset; }
-.buttons button:active{ transform:translateY(1px) }
-
-.info{ background: rgba(255,255,255,.04); border:1px dashed rgba(255,255,255,.12); border-radius:12px; padding:12px; margin:8px 0 4px 0; }
-
-.footer{ margin-top:auto; padding:12px 18px; border-top:1px solid rgba(255,255,255,.06); color:var(--muted); }
-
-
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
 body { margin: 0; background: #0b1219; color: #e9eef3; }
@@ -84,25 +17,94 @@ button:hover { border-color: #6fa9ff; }
 .info { background: #142033; border: 1px solid #234; padding: 10px 12px; border-radius: 8px; margin: 10px 0; }
 .footer { padding: 12px; border-top: 1px solid #2a2f36; color: #a8b3bf; }
 
-/* GOLD STYLES */
-.header{ box-shadow: 0 1px 0 rgba(204,182,63,.25) inset; border-bottom:1px solid rgba(204,182,63,.25); }
-.step{ border:1px solid rgba(204,182,63,.18); }
-.step h2{ color:#fff; border-left:4px solid #ccb63f; padding-left:10px; }
-.buttons button{ border-color: rgba(204,182,63,.35); }
-.buttons button:hover{ border-color:#ccb63f; box-shadow:0 0 0 2px rgba(204,182,63,.18) inset; }
-.info{ border-color: rgba(204,182,63,.35); }
-.rule{ height:1px; background: linear-gradient(90deg, transparent, rgba(204,182,63,.35), transparent); margin:16px 0; }
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
+/* === CI FINAL (injected) === */
+
+/* === CI FINAL – Typografie & Basis === */
+body{
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
 }
-.logo{
-  height:36px;
-  width:auto;
-  border-radius:8px;
-  box-shadow: 0 0 0 1px rgba(204,182,63,.25) inset, 0 2px 10px rgba(0,0,0,.25);
+.header{
+  padding:22px 20px;
+  box-shadow: 0 1px 0 rgba(204,182,63,.18) inset; /* dezente goldene Linie */
+  background: linear-gradient(180deg, rgba(43,43,41,.65), rgba(43,43,41,0));
 }
-.brand-meta h1{ margin:0 0 6px 0; }
+.header h1{
+  margin:0 0 8px 0;
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:.1px;
+}
+.header small{ color:#b5b5b5; line-height:1.5; font-size:13px; }
+
+/* Logo größer */
+.logo{ height:42px; width:auto; border-radius:8px; }
+.brand{ display:flex; align-items:center; gap:12px; }
+.brand-meta h1{ margin:0 0 8px 0; }
 .brand-meta small{ display:block; }
+
+/* === Karten / Kapitel === */
+.step{
+  background:#2f2e2a; /* klarer abgesetzt vom Hintergrund */
+  border:1px solid rgba(204,182,63,.18);
+  border-radius:18px;
+  padding:24px;
+  margin-top:10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.18);
+  position: relative;
+}
+/* Sticky Kapitelüberschrift */
+.step h2{
+  position: sticky;
+  top: 8px;
+  z-index: 2;
+  padding:8px 0 6px 0;
+  margin:0 0 8px 0;
+  background: linear-gradient(180deg, rgba(47,46,42,1) 70%, rgba(47,46,42,0));
+  border-left:4px solid #ccb63f;
+}
+
+/* Bubbles – ruhiger, besser lesbar */
+.msg .bubble{ padding:16px; border-radius:14px; line-height:1.6; box-shadow:none; }
+.msg.assistant .bubble{ background:#2b2b27; }
+.msg.user .bubble{ background:#3a3a34; }
+
+/* === Buttons: 3 pro Zeile, edler Hover, Gold-Fokus === */
+.buttons{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr)); /* immer 3 pro Reihe */
+  gap:12px;
+  margin-top:8px;
+}
+.buttons button{
+  background:var(--btn-bg);
+  color:var(--btn-text);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:12px 10px;
+  font-size:16px;
+  line-height:1.35;
+  white-space:normal;
+  word-break:break-word;
+  cursor:pointer;
+  transition:transform .06s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.buttons button:hover{
+  background:var(--btn-hover);
+  border-color:#ccb63f;
+  box-shadow:0 0 0 2px rgba(204,182,63,.10) inset;
+}
+/* Fokus – kein Blau mehr, goldene CI */
+.buttons button:focus{
+  outline:none;
+  border-color:#ccb63f;
+  box-shadow:0 0 0 2px rgba(204,182,63,.10) inset, 0 0 0 3px rgba(0,0,0,.25);
+}
+.buttons button::-moz-focus-inner{ border:0; }
+
+/* Divider noch etwas feiner */
+.rule{
+  height:1px;
+  background: linear-gradient(90deg, transparent, rgba(204,182,63,.18), transparent);
+  margin:16px 0;
+}
