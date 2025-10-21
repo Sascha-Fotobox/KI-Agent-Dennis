@@ -105,7 +105,7 @@ export default function App() {
     return keys.map((key) => {
       const count = effectivePrints(key as keyof typeof PRINT_PRICES, sel.format);
       const baseCount = key === "802" ? 800 : Number(key);
-      const info = key === "802" ? "2 Drucker" : `≈${baseCount} Basis (Postkarte)`;
+      const info = key === "802" ? "2 Drucker" : f"≈{baseCount} Basis (Postkarte)";
       return {
         key,
         label: `Printpaket ${key}`,
