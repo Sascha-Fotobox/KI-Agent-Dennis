@@ -98,13 +98,13 @@ const App: React.FC = () => {
       setSelections((p) => ({ ...p, mode }));
       if (mode === "Digital") {
         addBot(
-          "Alles klar! Digital kannst du immer unbegrenzt viele Fotos aufnehmen. Diese kannst du per QR-Download direkt an der Fotobox herunterladen und im Nachgang der Veranstaltung erhälst du eine Online-Galerie – nachhaltig und flexibel.\n\nLass uns nun schauen, welches Zubehör du dir zur Fotobox wünschst. \nÜbrigens: Ein Zubehör ist immer inklusive!"
+          "Alles klar! \n\nDigital kannst du immer unbegrenzt viele Fotos aufnehmen. Diese kannst du per QR-Download direkt an der Fotobox herunterladen und im Nachgang der Veranstaltung erhälst du eine Online-Galerie – nachhaltig und flexibel.\n\nLass uns nun schauen, welches Zubehör du dir zur Fotobox wünschst."
         );
         setCurrentStepId(5);
         setSubIndex(0);
         return;
       } else {
-        addBot("Alles klar – mit Sofortdruck soll es sein. \n\n Zur nächsten Frage: \nWas für eine Veranstaltung ist den geplant?");
+        addBot("Alles klar – mit Sofortdruck soll es sein. \n\nZur nächsten Frage: \nWas für eine Veranstaltung ist den geplant?");
         setCurrentStepId(2);
         return;
       }
