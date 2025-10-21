@@ -1,17 +1,5 @@
-import "./App.c
-  const current = stepById(currentStepId);
-type Btn = { label: string; value?: string } | string;
-
-const buttons: Btn[] = useMemo(() => {
-  // Spezialfall: Step 35 = Printmenge
-  if (currentStepId === 35) {
-    return ["100 Prints", "200 Prints", "400 Prints", "800 Prints"];
-  }
-  // Standard: aus dem Step laden
-  const opts = (current as any)?.buttons ?? (current as any)?.options ?? [];
-  return Array.isArray(opts) ? opts : [];
-}, [current, currentStepId]);
-ss";
+import "./App.css";
+  ss";
 import ConsentDeclined from "./components/ConsentDeclined";
 import ConsentGate, { STORAGE_KEY_BASE } from "./components/ConsentGate";
 
@@ -273,6 +261,15 @@ if (currentStepId === 35) {
     },
   ]);
 }
+  const current = stepById(currentStepId);
+type Btn = { label: string; value?: string } | string;
+const buttons: Btn[] = useMemo(() => {
+  if (currentStepId === 35) {
+    return ["100 Prints","200 Prints","400 Prints","800 Prints"];
+  }
+  const opts = (current as any)?.buttons ?? (current as any)?.options ?? [];
+  return Array.isArray(opts) ? opts : [];
+}, [current, currentStepId]);
 return (
       <div className="app">
         <header className="header">
