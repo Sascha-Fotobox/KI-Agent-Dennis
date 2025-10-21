@@ -464,7 +464,12 @@ return (
           )}
 
           <div className="sumrow" style={{ borderBottom: "none", paddingBottom: 0 }}>
-            <span>Zubehör</span><b>{/* header spacer */}</b>
+            {/* PREISAUSKUNFT DISCLAIMER */}
+<p className="hint" style={{ marginTop: 8 }}>
+  Preisauskunft – kein verbindliches Angebot. Terminverfügbarkeit vorbehalten.
+</p>
+
+<span>Zubehör</span><b>{/* header spacer */}</b>
           </div>
           {accessoriesLines.length === 0 ? (
             <div className="sumrow" style={{ paddingTop: 4 }}>
