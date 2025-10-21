@@ -373,7 +373,6 @@ export default function App() {
         </div>
         )}
 
-        {
         {/* Zusammenfassung */}
         <div className="bubble sum">
           {/* Allgemeine Informationen (ohne Preise) */}
