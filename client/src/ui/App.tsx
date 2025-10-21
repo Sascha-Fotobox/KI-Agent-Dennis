@@ -249,9 +249,7 @@ export default function App() {
         {/* 1) Modus */}
         <div className="bubble a">
           <p>Moin! Ich begleite dich Schritt für Schritt zu deiner individuellen Fotobox.</p>
-          <p>
-            Möchtest du eine <strong>rein digitale Fotobox</strong> oder eine <strong>digitale Fotobox mit Sofortdruckfunktion</strong>?
-          </p>
+          <p>Möchtest du eine rein digitale Fotobox oder eine digitale Fotobox mit Sofortdruckfunktion?</p>
           <div className="btnrow">
             {(["Digital", "Digital & Print"] as const).map((m) => (
               <button key={m} className={sel.mode === m ? "active" : ""} onClick={() => setMode(m)}>
