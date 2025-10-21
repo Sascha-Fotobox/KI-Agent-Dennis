@@ -1,5 +1,61 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
+import jsPDF from "jspdf";
+
+function buildOfferLines(s: Selections) {
+  const lines: string[] = [];
+  lines.push("Angebot – Fobi Fotobox");
+  lines.push("");
+  if (s.mode) lines.push(`Modus: ${s.mode}`);
+  if (s.eventType) lines.push(`Event: ${s.eventType}`);
+  if (s.guests) lines.push(`Gäste: ${s.guests}`);
+  if (s.format) lines.push(`Druckformat: ${s.format}`);
+  if (s.printPackage) lines.push(`Printpaket: ${s.printPackage}`);
+  const acc: string[] = [];
+  (["Requisiten","Hintergrund","Layout","Gala-Paket","Audio-Gästebuch"] as const).forEach(k => {
+    if (s.accessories?.[k]) acc.push(k);
+  });
+  lines.push(`Zubehör: ${acc.length ? acc.join(", ") : "–"}`);
+  if (s.eventDate) lines.push(`Datum: ${s.eventDate}`);
+  if (s.eventLocation) lines.push(`Ort: ${s.eventLocation}`);
+  lines.push("");
+  return lines;
+}
+
+function makePdf(s: Selections, total: number) {
+  const doc = new jsPDF();
+  let y = 15;
+  doc.setFontSize(16);
+  doc.text("Fobi Fotobox – Angebot", 14, y); y += 8;
+  doc.setFontSize(11);
+  const lines = buildOfferLines(s);
+  lines.forEach((ln) => { doc.text(ln, 14, y); y += 6; });
+  y += 4;
+  doc.setLineWidth(0.3);
+  doc.line(14, y, 196, y); y += 8;
+  doc.setFontSize(12);
+  doc.text(`Gesamtsumme: ${formatCurrency(total)}`, 14, y); y += 8;
+  // PREISAUSKUNFT_PDF
+  doc.setFontSize(10);
+  doc.text("Preisauskunft – kein verbindliches Angebot. Terminverfügbarkeit vorbehalten.", 14, y);
+  y += 6;
+  if (s.format === "Postkarte & Streifen") {
+    doc.text("Enthalten: zweites Layout (zwei Druckformate) – 20,00 €", 14, y);
+    y += 6;
+  }
+  return doc;
+}
+
+function buildEmailBody(s: Selections, total: number) {
+  const l = buildOfferLines(s);
+  l.push("");
+  l.push(`Gesamtsumme: ${formatCurrency(total)}`);
+  l.push("");
+  l.push("Hinweis: Bitte die heruntergeladene PDF anhängen.");
+  return l.join("\n");
+}
+
+
 
 /** ---------- Typen ---------- */
 type Knowledge = {
@@ -23,6 +79,9 @@ type Selections = {
 
   accessories: Partial<Record<AccessoryKey, boolean>>;
   accessoryOrder: AccessoryKey[]; // Reihenfolge der Aktivierung (für „erstes inkl.“)
+
+  eventDate?: string;
+  eventLocation?: string;
 };
 
 /** ---------- Konstanten ---------- */
@@ -491,3 +550,17 @@ return (
     </div>
   );
 }
+
+<div className="bubble a" style={{ marginTop: 12 }}>
+  <div className="sectionTitle">Aktionen</div>
+  <div className="btnrow wrap">
+    <button className="card" onClick={handleDownloadPdf}>PDF herunterladen</button>
+    <button className="card" onClick={handleEmail}>Per E-Mail senden</button>
+    <button className="card" onClick={handleShareWhatsapp}>Per WhatsApp senden</button>
+  </div>
+  <p className="hint" style={{ marginTop: 8 }}>
+    Hinweis: Browser können Anhänge nicht automatisch in E-Mails/WhatsApp einfügen.
+    Nach dem Download die PDF im geöffneten Programm anhängen. Auf vielen Smartphones
+    funktioniert das direkte Teilen über die System-Freigabe.
+  </p>
+</div>
