@@ -23,3 +23,4 @@ button.active { border-color:#ccb63f; background:#2a2a25; }
 .sumrow { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #3a3a38; }
 .total { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding-top:10px; margin-top:6px; border-top:1px solid #3a3a38; }
 .total b{ font-size:20px; }
+.chip { display:inline-block; background:#2d2d29; border:1px solid #3f3f3b; color:#e8e6de; padding:2px 8px; margin:0 6px; border-radius:999px; font-size: 12px; }
