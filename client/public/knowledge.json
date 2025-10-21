@@ -1,0 +1,11 @@
+{
+  "brand": "Fobi Fotobox",
+  "assistant_name": "Dennis",
+  "theme": {
+    "bg": "#1e1e1c",
+    "text": "#ffffff",
+    "brand": "#ccb63f",
+    "accent": "#ccb63f"
+  },
+  "disclaimer": "Hinweis: Dieser Chat dient ausschließlich der Beratung und Preisfindung. Um unseren Service zu verbessern, können Gespräche gespeichert werden. Bitte keine personenbezogenen Daten eingeben – keine Telefonnummern, E-Mail-Adressen oder vollständigen Namen. Nenne bei Bedarf nur allgemeine Eckdaten (z. B. Stadt, Gästezahl, Zeitraum). Mit dem Fortfahren stimmst du zu, dass deine Eingaben zu Beratungszwecken verarbeitet werden."
+}
