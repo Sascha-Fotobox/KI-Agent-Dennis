@@ -28,8 +28,6 @@
     ]
   },
   "basePackage": {
-    "features": [
-      "Ein kleines Zubehörpaket (Requisiten, Hintergrundsystem oder individuelle Layoutgestaltung) ist ebenfalls inklusive. Die Auswahl erfolgt beim Zubehör."
-    ]
+    "features": []
   }
 }

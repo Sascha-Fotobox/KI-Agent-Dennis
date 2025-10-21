@@ -295,7 +295,7 @@ return (
               </li>
             </ul>
             <p className="hint" style={{ marginTop: 4 }}>
-              Ein kleines Zubehörpaket (Requisiten, Hintergrundsystem oder individuelle Layoutgestaltung) ist ebenfalls inklusive. Die Auswahl erfolgt beim Zubehör.
+              
             </p>
 
           </div>
