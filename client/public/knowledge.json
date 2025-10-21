@@ -7,5 +7,29 @@
     "brand": "#ccb63f",
     "accent": "#ccb63f"
   },
-  "disclaimer": "Hinweis: Dieser Chat dient ausschließlich der Beratung und Preisfindung. Bitte keine personenbezogenen Daten eingeben – keine Telefonnummern, E-Mail-Adressen oder vollständigen Namen. Nenne bei Bedarf nur allgemeine Eckdaten (z. B. Stadt, Gästezahl, Zeitraum). Mit dem Fortfahren stimmst du zu, dass deine Eingaben zu Beratungszwecken verarbeitet werden."
+  "disclaimer": "Hinweis: Dieser Chat dient ausschließlich der Beratung und Preisfindung. Bitte keine personenbezogenen Daten eingeben – keine Telefonnummern, E-Mail-Adressen oder vollständigen Namen. Nenne bei Bedarf nur allgemeine Eckdaten (z. B. Stadt, Gästezahl, Zeitraum). Mit dem Fortfahren stimmst du zu, dass deine Eingaben zu Beratungszwecken verarbeitet werden.",
+  "labels": {},
+  "options": {
+    "events": [
+      "Hochzeit",
+      "Geburtstag",
+      "Internes Firmenevent",
+      "Abschlussball",
+      "Messe",
+      "Kundenevent",
+      "Sonstiges"
+    ],
+    "guests": [
+      "bis 30",
+      "30 - 50",
+      "50 - 120",
+      "120 - 250",
+      "ab 250"
+    ]
+  },
+  "basePackage": {
+    "features": [
+      "Ein kleines Zubehörpaket (Requisiten, Hintergrundsystem oder individuelle Layoutgestaltung) ist ebenfalls inklusive. Die Auswahl erfolgt beim Zubehör."
+    ]
+  }
 }

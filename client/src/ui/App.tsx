@@ -284,7 +284,7 @@ return (
             <ul style={{ margin: 0, paddingLeft: 18 }}>
               <li>Alle Fotos / Videos mit Overlay</li>
               <li>Online‑Galerie (mit Passwort)</li>
-              <li>telefonisches Vorabgespräch</li>
+              <li>Vorabgespräch per Telefon oder Videomeeting</li>
               <li>24/7 Support</li>
               <li>Lieferung / Aufbau / Abbau <span style={{ whiteSpace: "nowrap" }}>(20&nbsp;km inkl., 80&nbsp;km möglich)</span></li>
             </ul>
@@ -295,7 +295,7 @@ return (
               </li>
             </ul>
             <p className="hint" style={{ marginTop: 4 }}>
-              Hinweis: Auswahl erfolgt bei den Zubehörpaketen.
+              Ein kleines Zubehörpaket (Requisiten, Hintergrundsystem oder individuelle Layoutgestaltung) ist ebenfalls inklusive. Die Auswahl erfolgt beim Zubehör.
             </p>
 
           </div>
@@ -311,12 +311,12 @@ return (
           </div>
         </div>
 
-        {/* 2) Eventtyp */}
+        {/* 2) Event */}
         {showEvent && (
         <div className="bubble a">
-          <div className="sectionTitle">Eventtyp</div>
+          <div className="sectionTitle">Event</div>
 <div className="btnrow wrap">
-            {["Hochzeit", "Geburtstag", "Firmenfeier", "Abschlussball", "Gartenparty", "Sonstiges"].map((t) => (
+            {[ "Hochzeit", "Geburtstag", "Internes Firmenevent", "Abschlussball", "Messe", "Kundenevent", "Sonstiges" ].map((t) => (
               <button
                 key={t}
                 className={sel.eventType === t ? "active" : ""}
@@ -402,7 +402,7 @@ return (
           <div className="sectionTitle">Zubehör (Mehrfachauswahl möglich)</div>
           <p className="hint">Hinweis: Ein kleines Zubehörset (Requisiten, Hintergrund oder Layoutgestaltung) ist inklusive und wird in der Berechnung automatisch berücksichtigt.</p>
           <div className="btnrow wrap threecol">
-            {(["Requisiten", "Hintergrund", "Layout", "Gala-Paket", "Audio-Gästebuch"] as const).map((z) => {
+            {([ "bis 30", "30 - 50", "50 - 120", "120 - 250", "ab 250" ] as const).map((z) => {
               const active = !!sel.accessories[z];
               return (
                 <button key={z} className={active ? "active card" : "card"} onClick={() => toggleAccessory(z)}>
