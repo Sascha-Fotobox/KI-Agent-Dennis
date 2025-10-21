@@ -235,15 +235,12 @@ const App: React.FC = () => {
       <div className="app">
         <header className="header">
         <div className="brand">
-          {(K as any)?.logo_url || true ? (
-            <img className="logo" src={(K as any)?.logo_url || `${import.meta.env.BASE_URL}logo.svg`} alt="Logo" />
-          ) : null}
-          <div className="brand-meta">
-            <h1>
-              {K.brand} – Assistent „{K.assistant_name}“
-            </h1>
-            <small>{K.privacy_notice}</small>
-          </div>
+  <img className="logo" src={(K as any)?.logo_url || "/logo.svg"} alt="Logo" />
+  <div className="brand-meta">
+    <h1>{K.brand} – Assistent „{K.assistant_name}“</h1>
+    <small>{K.privacy_notice}</small>
+  </div>
+</div>
         </div>
           <h1>FOBI Fotobox – Assistent</h1>
         </header>
