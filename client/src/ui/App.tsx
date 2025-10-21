@@ -429,6 +429,8 @@ function normalizeEventKeyLocal(label?: string): string {
   return s;
 }
 
+}
+
 export default App;
 
 
