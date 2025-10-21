@@ -82,6 +82,13 @@ function effectivePrints(pkg: Exclude<PrintPkg, null>, format?: Format) {
   return Math.round(base * formatFactor(format));
 }
 
+function formatLabel(format?: Format) {
+  if (format === "Streifen") return "Fotostreifenformat";
+  if (format === "Großbild") return "Großbildformat";
+  return "Postkartenformat";
+}
+
+
 /** ---------- Knowledge.json laden ---------- */
 function useKnowledge() {
   const [k, setK] = useState<Knowledge | null>(null);
@@ -201,7 +208,7 @@ export default function App() {
     return keys.map((key) => {
       const count = effectivePrints(key, sel.format);
       const info = IS_DUAL[key] ? "2 Drucker" : `≈${BASE_COUNTS[key]} Basis (Postkarte)`;
-      return { key, label: `Printpaket ${key}`, sub: `${count} Drucke`, info, price: PRINT_PRICES[key] };
+      return { key, label: `${count} Prints im ${formatLabel(sel.format)}`, sub: `(Printpaket ${key})`, price: PRINT_PRICES[key] };
     });
   }, [sel.format]);
 
@@ -325,16 +332,15 @@ export default function App() {
               {(["100", "200", "400", "800", "802"] as const).map((key) => {
                 const active = sel.printPackage === key;
                 const count = effectivePrints(key, sel.format);
-                const info = IS_DUAL[key] ? "2 Drucker" : `≈${BASE_COUNTS[key]} Basis (Postkarte)`;
+                const labelTop = `${count} Prints im ${formatLabel(sel.format)}`;
                 return (
                   <button
                     key={key}
                     className={active ? "active card" : "card"}
                     onClick={() => setSel((s) => ({ ...s, printPackage: key }))}
                   >
-                    <div className="btn-title">{`Printpaket ${key}`}</div>
-                    <div className="btn-sub">{`${count} Drucke`}</div>
-                    <div className="btn-sub">{info}</div>
+                    <div className="btn-title">{labelTop}</div>
+                    <div className="btn-sub">{`(Printpaket ${key})`}</div>
                     <div className="btn-price">{formatCurrency(PRINT_PRICES[key])}</div>
                   </button>
                 );
@@ -369,38 +375,54 @@ export default function App() {
         </div>
         )}
 
+        {
         {/* Zusammenfassung */}
         <div className="bubble sum">
-          <div className="sumrow"><span>Grundpaket</span><b>{formatCurrency(BASE_PRICE)}</b></div>
+          {/* Allgemeine Informationen (ohne Preise) */}
           <div className="sumrow"><span>Fotobox</span><b>{sel.mode ?? "–"}</b></div>
           <div className="sumrow"><span>Event</span><b>{sel.eventType ?? "–"}</b></div>
-
-          {showGuests && (
+          {sel.mode === "Digital & Print" && (
             <>
               <div className="sumrow"><span>Gäste</span><b>{sel.guests ?? "–"}</b></div>
               <div className="sumrow"><span>Format</span><b>{sel.format ?? "–"}</b></div>
-              <div className="sumrow"><span>Druckpaket</span><b>{sel.printPackage ? `Printpaket ${sel.printPackage} – ${formatCurrency(PRINT_PRICES[sel.printPackage])}` : "–"}</b></div>
+            </>
+          )}
+          <div className="divider" />
+
+          {/* Preise */}
+          <div className="sumrow"><span>Grundpaket</span><b>{formatCurrency(BASE_PRICE)}</b></div>
+
+          {sel.mode === "Digital & Print" && sel.printPackage && (
+            <>
+              <div className="sumrow" style={{ borderBottom: "none", paddingBottom: 0 }}>
+                <span>Druckpakete</span><b></b>
+              </div>
+              <div className="sumrow" style={{ paddingTop: 4 }}>
+                <span>{`Printpaket ${sel.printPackage}`}</span>
+                <b>{formatCurrency(PRINT_PRICES[sel.printPackage])}</b>
+              </div>
             </>
           )}
 
           <div className="sumrow" style={{ borderBottom: "none", paddingBottom: 0 }}>
-            <span>Zubehör</span>
-            <b>{/* rechter Platzhalter */}</b>
+            <span>Zubehör</span><b>{/* header spacer */}</b>
           </div>
-          {(() => {
-            if (accessoriesLines.length === 0) {
-              return <div className="sumrow" style={{ paddingTop: 4 }}><span>–</span><b>–</b></div>;
-            }
-            return accessoriesLines.map((line) => (
+          {accessoriesLines.length === 0 ? (
+            <div className="sumrow" style={{ paddingTop: 4 }}>
+              <span>–</span><b>–</b>
+            </div>
+          ) : (
+            accessoriesLines.map((line) => (
               <div key={line.key} className="sumrow" style={{ paddingTop: 4 }}>
                 <span>{line.key}{line.isFree ? " (inklusive)" : ""}</span>
                 <b>{formatCurrency(line.price)}</b>
               </div>
-            ));
-          })()}
+            ))
+          )}
 
           <div className="total"><span>Gesamt</span><b>{formatCurrency(total)}</b></div>
         </div>
+
       </main>
     </div>
   );

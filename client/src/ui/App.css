@@ -83,3 +83,10 @@ button.card .btn-price { margin-top:6px; font-weight:700; }
   font-size:14px;
   margin-bottom:10px;
 }
+
+
+.divider{
+  height:1px;
+  background: linear-gradient(90deg, transparent, #3a3a38, transparent);
+  margin:8px 0;
+}
