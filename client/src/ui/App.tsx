@@ -1,5 +1,4 @@
 import "./App.css";
-  ss";
 import ConsentDeclined from "./components/ConsentDeclined";
 import ConsentGate, { STORAGE_KEY_BASE } from "./components/ConsentGate";
 
