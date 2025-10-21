@@ -335,7 +335,7 @@ return (
           <div className="bubble a">
             <div className="sectionTitle">Gästezahl</div>
             <div className="btnrow">
-              {["bis 50", "50–100", "100–150", "150–200", "200+"].map((g) => (
+              {[ "bis 30", "30 - 50", "50 - 120", "120 - 250", "ab 250" ].map((g) => (
                 <button
                   key={g}
                   className={sel.guests === g ? "active" : ""}
