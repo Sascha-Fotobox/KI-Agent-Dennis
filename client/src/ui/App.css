@@ -1,110 +1,83 @@
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
-body { margin: 0; background: #0b1219; color: #e9eef3; }
-.app { max-width: 980px; margin: 0 auto; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-.header { padding: 16px 12px; border-bottom: 1px solid #2a2f36; }
-.chat { padding: 16px 12px; min-height: 60vh; }
-.msg { display: flex; margin-bottom: 12px; }
-.msg.assistant { justify-content: flex-start; }
-.msg.user { justify-content: flex-end; }
-.bubble { max-width: 80%; padding: 10px 12px; border-radius: 12px; white-space: pre-wrap; background: #121a23; border: 1px solid #263140; }
-.user .bubble { background: #11314f; border: 1px solid #305f8a; }
-.step { padding: 12px; border-top: 1px dashed #2a2f36; }
-.ask { color: #d6dbe0; }
-.buttons { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 10px; margin-top: 10px; }
-button { padding: 10px 12px; border-radius: 10px; border: 1px solid #3a3f46; background: #182230; color: #e9eef3; cursor: pointer; }
-button:hover { border-color: #6fa9ff; }
-.info { background: #142033; border: 1px solid #234; padding: 10px 12px; border-radius: 8px; margin: 10px 0; }
-.footer { padding: 12px; border-top: 1px solid #2a2f36; color: #a8b3bf; }
+html, body { margin:0; padding:0; }
+body { background:#1e1e1c; color:#fff; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
 
-
-/* === CI FINAL (injected) === */
-
-/* === CI FINAL – Typografie & Basis === */
-body{
-  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+/* Topbar (no blue, anthracite + gold) */
+.topbar {
+  position: sticky; top:0; z-index:10;
+  background: linear-gradient(180deg, rgba(30,30,28,0.95), rgba(30,30,28,0.85));
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid #3a3a38;
+  padding: 14px 12px;
 }
-.header{
-  padding:22px 20px;
-  box-shadow: 0 1px 0 rgba(204,182,63,.18) inset; /* dezente goldene Linie */
-  background: linear-gradient(180deg, rgba(43,43,41,.65), rgba(43,43,41,0));
-}
-.header h1{
-  margin:0 0 8px 0;
-  font-size:22px;
-  font-weight:700;
-  letter-spacing:.1px;
-}
-.header small{ color:#b5b5b5; line-height:1.5; font-size:13px; }
-
-/* Logo größer */
-.logo{ height:42px; width:auto; border-radius:8px; }
-.brand{ display:flex; align-items:center; gap:12px; }
-.brand-meta h1{ margin:0 0 8px 0; }
-.brand-meta small{ display:block; }
-
-/* === Karten / Kapitel === */
-.step{
-  background:#2f2e2a; /* klarer abgesetzt vom Hintergrund */
-  border:1px solid rgba(204,182,63,.18);
-  border-radius:18px;
-  padding:24px;
-  margin-top:10px;
-  box-shadow: 0 8px 30px rgba(0,0,0,.18);
-  position: relative;
-}
-/* Sticky Kapitelüberschrift */
-.step h2{
-  position: sticky;
-  top: 8px;
-  z-index: 2;
-  padding:8px 0 6px 0;
-  margin:0 0 8px 0;
-  background: linear-gradient(180deg, rgba(47,46,42,1) 70%, rgba(47,46,42,0));
-  border-left:4px solid #ccb63f;
+.brandRow { display:flex; align-items:center; gap:12px; }
+.logo { width:40px; height:40px; border-radius:10px; }
+.brandName { font-weight:800; letter-spacing: .2px; }
+.brandSub { color:#c9c9c2; font-size:13px; }
+.disclaimer {
+  margin:10px 0 0; font-size:12px; line-height:1.45;
+  color:#d6d6cf;
+  white-space: pre-line; /* interprets newlines, avoids literal \n */
 }
 
-/* Bubbles – ruhiger, besser lesbar */
-.msg .bubble{ padding:16px; border-radius:14px; line-height:1.6; box-shadow:none; }
-.msg.assistant .bubble{ background:#2b2b27; }
-.msg.user .bubble{ background:#3a3a34; }
+/* Chat area */
+.app { max-width: 900px; margin: 0 auto; }
+.chat { padding: 16px 12px 40px; display:flex; flex-direction:column; gap:14px; }
 
-/* === Buttons: 3 pro Zeile, edler Hover, Gold-Fokus === */
-.buttons{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0,1fr)); /* immer 3 pro Reihe */
-  gap:12px;
-  margin-top:8px;
+.bubble {
+  max-width: 820px;
+  background:#262623;
+  border: 1px solid #3a3a38;
+  color:#f5f5ee;
+  border-radius: 14px;
+  padding: 14px;
+  line-height:1.55;
+  box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 12px 24px rgba(0,0,0,.12);
 }
-.buttons button{
-  background:var(--btn-bg);
-  color:var(--btn-text);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:10px;
-  padding:12px 10px;
-  font-size:16px;
-  line-height:1.35;
-  white-space:normal;
-  word-break:break-word;
+.bubble.a { align-self: flex-start; border-left: 3px solid #ccb63f; }
+.bubble.sum {
+  background:#1a1a18;
+  border:1px solid #3a3a38;
+}
+.bubble.focus { background:#22221f; border-color:#5a5a56; }
+
+.sectionTitle { font-weight:700; margin-bottom:6px; color:#f1f1ea; }
+.note {
+  background:#1b1b19; border:1px solid #343432; color:#d5d5cd; padding:10px 12px; border-radius:10px;
+  font-size:13px; margin:8px 0 12px;
+}
+
+.btnrow { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+.btnrow.wrap { flex-wrap: wrap; }
+
+button {
+  border:1px solid #4a4a46;
+  background:#222220;
+  color:#f4f4ee;
+  border-radius:12px;
+  padding:10px 12px;
   cursor:pointer;
-  transition:transform .06s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
-.buttons button:hover{
-  background:var(--btn-hover);
-  border-color:#ccb63f;
-  box-shadow:0 0 0 2px rgba(204,182,63,.10) inset;
-}
-/* Fokus – kein Blau mehr, goldene CI */
-.buttons button:focus{
-  outline:none;
-  border-color:#ccb63f;
-  box-shadow:0 0 0 2px rgba(204,182,63,.10) inset, 0 0 0 3px rgba(0,0,0,.25);
-}
-.buttons button::-moz-focus-inner{ border:0; }
+button .btn-title{ font-weight:600; }
+button .btn-sub{ opacity:.9; font-size:12px; }
+button .btn-price{ margin-top:6px; font-weight:700; }
 
-/* Divider noch etwas feiner */
-.rule{
-  height:1px;
-  background: linear-gradient(90deg, transparent, rgba(204,182,63,.18), transparent);
-  margin:16px 0;
+/* No blue: hover/focus/active in gold */
+button:hover{ border-color:#9a8c36; }
+button:focus{ outline:none; border-color:#ccb63f; box-shadow:0 0 0 2px rgba(204,182,63,.12) inset, 0 0 0 3px rgba(0,0,0,.25); }
+button.active { border-color:#ccb63f; background:#2a2a25; }
+
+.chip {
+  display:inline-block;
+  background:#2d2d29;
+  border:1px solid #3f3f3b;
+  color:#e8e6de;
+  padding:2px 8px; margin:0 6px;
+  border-radius:999px;
+  font-size: 12px;
 }
+
+.sumrow { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #3a3a38; }
+.total { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding-top:10px; margin-top:6px; border-top:1px solid #3a3a38; }
+.total b{ font-size:20px; }

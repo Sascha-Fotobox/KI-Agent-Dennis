@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="180" height="40" viewBox="0 0 180 40"><rect width="180" height="40" rx="8" fill="#232321"/><g fill="#ccb63f" font-family="Arial" font-weight="700" font-size="20"><text x="14" y="26">Fobi Fotobox</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none">
+  <rect x="8" y="16" width="80" height="56" rx="8" stroke="#ccb63f" stroke-width="4" fill="#232321"/>
+  <circle cx="48" cy="44" r="16" stroke="#ccb63f" stroke-width="4" fill="none"/>
+  <circle cx="48" cy="44" r="6" fill="#ccb63f"/>
+  <rect x="18" y="22" width="16" height="8" rx="2" fill="#ccb63f"/>
+</svg>
