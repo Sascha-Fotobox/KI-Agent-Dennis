@@ -23,7 +23,7 @@ body{
 }
 
 .app{ display:flex; flex-direction:column; min-height:100%; }
-.header{ padding:16px 20px; background:linear-gradient(180deg, rgba(43,43,41,.65), rgba(43,43,41,0)); box-shadow: 0 1px 0 rgba(204,182,63,.25) inset; border-bottom:1px solid rgba(255,255,255,.06); }
+.header{ padding:16px 20px; background:linear-gradient(180deg, rgba(43,43,41,.65), rgba(43,43,41,0)); border-bottom:1px solid rgba(255,255,255,.06); }
 .header h1{ margin:0 0 6px 0; font-size:20px; font-weight:700; letter-spacing:.2px; }
 .header small{ color:var(--muted); line-height:1.4; }
 
@@ -32,7 +32,7 @@ body{
 .msg.assistant .bubble{ background:var(--bubble-assistant); }
 .msg.user .bubble{ background:var(--bubble-user); }
 
-.step{ background:var(--card); /* anthracite */ border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:16px; margin-top:6px; box-shadow: 0 8px 24px rgba(0,0,0,.22); }
+.step{ background:var(--card); /* anthracite */ border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:16px; margin-top:6px; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
 .step h2{ margin:0 0 8px 0; font-size:18px; }
 .step .ask{ margin:0 0 12px 0; color:var(--muted) }
 
@@ -57,7 +57,7 @@ body{
   cursor:pointer;
   transition:transform .06s ease, background .15s ease, border-color .15s ease;
 }
-.buttons button:hover{ background:var(--btn-hover); border-color:#ccb63f; box-shadow:0 0 0 2px rgba(204,182,63,.12) inset; }
+.buttons button:hover{ background:var(--btn-hover); border-color: rgba(255,255,255,.14) }
 .buttons button:active{ transform:translateY(1px) }
 
 .info{ background: rgba(255,255,255,.04); border:1px dashed rgba(255,255,255,.12); border-radius:12px; padding:12px; margin:8px 0 4px 0; }
@@ -85,24 +85,10 @@ button:hover { border-color: #6fa9ff; }
 .footer { padding: 12px; border-top: 1px solid #2a2f36; color: #a8b3bf; }
 
 /* GOLD STYLES */
-.header{ box-shadow: 0 1px 0 rgba(204,182,63,.25) inset; border-bottom:1px solid rgba(204,182,63,.25); }
+.header{ border-bottom:1px solid rgba(204,182,63,.25); }
 .step{ border:1px solid rgba(204,182,63,.18); }
 .step h2{ color:#fff; border-left:4px solid #ccb63f; padding-left:10px; }
 .buttons button{ border-color: rgba(204,182,63,.35); }
 .buttons button:hover{ border-color:#ccb63f; box-shadow:0 0 0 2px rgba(204,182,63,.18) inset; }
 .info{ border-color: rgba(204,182,63,.35); }
-.rule{ height:1px; background: linear-gradient(90deg, transparent, rgba(204,182,63,.35), transparent); margin:16px 0; }
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.logo{
-  height:36px;
-  width:auto;
-  border-radius:8px;
-  box-shadow: 0 0 0 1px rgba(204,182,63,.25) inset, 0 2px 10px rgba(0,0,0,.25);
-}
-.brand-meta h1{ margin:0 0 6px 0; }
-.brand-meta small{ display:block; }
+.rule{ height:1px; background: linear-gradient(90deg, transparent, rgba(204,182,63,.5), transparent); margin:16px 0; }
