@@ -245,13 +245,38 @@ export default function App() {
       </header>
 
       <main className="chat">
-        <div className="infobar">
-          <strong>Grundpaket</strong>: Enthält die typischen Basispunkte – Fotobox, Spiegelreflexkamera und Lieferung. (Im Projekt definierbar)
-        </div>
-        {/* 1) Modus */}
+{/* 1) Modus */}
         <div className="bubble a">
           <p>Moin! Ich begleite dich Schritt für Schritt zu deiner individuellen Fotobox.</p>
-          <p>Möchtest du eine rein digitale Fotobox oder eine digitale Fotobox mit Sofortdruckfunktion?</p>
+          <div className="note" style={{ marginTop: 8 }}>
+            <div style={{ fontWeight: 700, marginBottom: 6 }}>Grundpaket – das ist immer inklusive:</div>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              <li>Fotobox ausgestattet mit:
+                <ul style={{ marginTop: 4, paddingLeft: 18 }}>
+                  <li>Spiegelreflexkamera</li>
+                  <li>Studioblitz / Beleuchtung</li>
+                  <li>Touchscreen&nbsp;15&quot;</li>
+                </ul>
+              </li>
+              <li>digitale Fotoflat</li>
+              <li>Videovorschau (du siehst dich selbst)</li>
+              <li>Fun-Filter (SW, Sepia, ...)</li>
+              <li>GIF-Videos</li>
+              <li>Boomerang-Videos</li>
+              <li>Bilderversand an der Fotobox (QR‑Code)</li>
+            </ul>
+            <div style={{ fontWeight: 700, margin: "10px 0 6px" }}>Service</div>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              <li>Alle Fotos / Videos mit Overlay</li>
+              <li>Online‑Galerie (mit Passwort)</li>
+              <li>telefonisches Vorabgespräch</li>
+              <li>24/7 Support</li>
+              <li>Lieferung / Aufbau / Abbau <span style={{ whiteSpace: "nowrap" }}>(20&nbsp;km inkl., 80&nbsp;km möglich)</span></li>
+            </ul>
+          </div>
+          <p style={{ marginTop: 10 }}>Als erstes kannst du wählen: Möchtest du eine <strong>rein digitale Fotobox</strong> oder eine <strong>digitale Fotobox mit Sofortdruckfunktion</strong>?</p>
+
+          
           <div className="btnrow">
             {(["Digital", "Digital & Print"] as const).map((m) => (
               <button key={m} className={sel.mode === m ? "active" : ""} onClick={() => setMode(m)}>
