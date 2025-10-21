@@ -232,7 +232,6 @@ export default function App() {
             <div className="brandSub">Assistent „{k?.assistant_name ?? "Dennis"}“</div>
           </div>
         </div>
-        )}
         <p className="disclaimer">{sanitize(k?.disclaimer)}</p>
       </header>
 
@@ -259,8 +258,7 @@ export default function App() {
         {showEvent && (
         <div className="bubble a">
           <div className="sectionTitle">Eventtyp</div>
-        )}
-          <div className="btnrow wrap">
+<div className="btnrow wrap">
             {["Hochzeit", "Geburtstag", "Firmenfeier", "Abschlussball", "Gartenparty", "Sonstiges"].map((t) => (
               <button
                 key={t}
@@ -272,6 +270,8 @@ export default function App() {
             ))}
           </div>
         </div>
+        )}
+
 
         {/* 3) Gästezahl – nur bei Digital & Print */}
         {showGuests && (
@@ -279,7 +279,11 @@ export default function App() {
             <div className="sectionTitle">Gästezahl</div>
             <div className="btnrow">
               {["bis 50", "50–100", "100–150", "150–200", "200+"].map((g) => (
-                <button key={g} className={sel.guests === g ? "active" : ""} onClick={() => setSel((s) => ({ ...s, guests: g }))}>
+                <button
+                  key={g}
+                  className={sel.guests === g ? "active" : ""}
+                  onClick={() => setSel((s) => ({ ...s, guests: g }))}
+                >
                   {g}
                 </button>
               ))}
