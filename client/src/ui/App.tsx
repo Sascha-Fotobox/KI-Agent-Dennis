@@ -402,7 +402,7 @@ return (
           <div className="sectionTitle">Zubehör (Mehrfachauswahl möglich)</div>
           <p className="hint">Hinweis: Ein kleines Zubehörset (Requisiten, Hintergrund oder Layoutgestaltung) ist inklusive und wird in der Berechnung automatisch berücksichtigt.</p>
           <div className="btnrow wrap threecol">
-            {([ "bis 30", "30 - 50", "50 - 120", "120 - 250", "ab 250" ] as const).map((z) => {
+            {(["Requisiten", "Hintergrund", "Layout", "Gala-Paket", "Audio-Gästebuch"] as const).map((z) => {
               const active = !!sel.accessories[z];
               return (
                 <button key={z} className={active ? "active card" : "card"} onClick={() => toggleAccessory(z)}>
