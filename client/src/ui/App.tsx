@@ -232,6 +232,7 @@ export default function App() {
             <div className="brandSub">Assistent „{k?.assistant_name ?? "Dennis"}“</div>
           </div>
         </div>
+        )}
         <p className="disclaimer">{sanitize(k?.disclaimer)}</p>
       </header>
 
@@ -255,6 +256,7 @@ export default function App() {
         </div>
 
         {/* 2) Eventtyp */}
+        {showEvent && (
         <div className="bubble a">
           <div className="sectionTitle">Eventtyp</div>
           <div className="btnrow wrap">
@@ -365,14 +367,14 @@ export default function App() {
         {/* Zusammenfassung */}
         <div className="bubble sum">
           <div className="sumrow"><span>Grundpaket</span><b>{formatCurrency(BASE_PRICE)}</b></div>
-          <div className="sumrow"><span>Modus</span><b>{sel.mode ?? "–"}</b></div>
+          <div className="sumrow"><span>Fotobox</span><b>{sel.mode ?? "–"}</b></div>
           <div className="sumrow"><span>Event</span><b>{sel.eventType ?? "–"}</b></div>
 
           {showGuests && (
             <>
               <div className="sumrow"><span>Gäste</span><b>{sel.guests ?? "–"}</b></div>
               <div className="sumrow"><span>Format</span><b>{sel.format ?? "–"}</b></div>
-              <div className="sumrow"><span>Druckpaket</span><b>{sel.printPackage ? `Printpaket ${sel.printPackage}` : "–"}</b></div>
+              <div className="sumrow"><span>Druckpaket</span><b>{sel.printPackage ? `Printpaket ${sel.printPackage} – ${formatCurrency(PRINT_PRICES[sel.printPackage])}` : "–"}</b></div>
             </>
           )}
 
