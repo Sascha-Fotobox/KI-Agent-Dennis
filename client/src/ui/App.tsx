@@ -187,6 +187,13 @@ export default function App() {
   }, [sel.mode, sel.printPackage]);
 
   const total = useMemo(() => BASE_PRICE + printCost + accessoriesCost, [printCost, accessoriesCost]);
+  // Sichtbarkeitslogik (progressiver Flow)
+  const showEvent = !!sel.mode;
+  const showGuests = sel.mode === "Digital & Print" && !!sel.eventType;
+  const showFormat = sel.mode === "Digital & Print" && !!sel.guests;
+  const showPrintPkgs = sel.mode === "Digital & Print" && !!sel.format;
+  const showAccessories = (sel.mode === "Digital" && !!sel.eventType) || (sel.mode === "Digital & Print" && !!sel.printPackage && !!sel.format);
+
 
   /** Karten für Druckpakete */
   const pkgCards = useMemo(() => {
@@ -229,12 +236,14 @@ export default function App() {
       </header>
 
       <main className="chat">
+        <div className="infobar">
+          <strong>Grundpaket</strong>: Enthält die typischen Basispunkte – Fotobox, Spiegelreflexkamera und Lieferung. (Im Projekt definierbar)
+        </div>
         {/* 1) Modus */}
         <div className="bubble a">
-          <p>Moin! Gerne begleite ich dich Schritt für Schritt zu deiner individuellen Fotobox.</p>
+          <p>Moin! Ich begleite dich Schritt für Schritt zu deiner individuellen Fotobox.</p>
           <p>
-            <strong>Möchtest du die Fotobox</strong> <span className="chip">Digital</span> nutzen oder
-            <span className="chip">Digital &amp; Print</span>?
+            Möchtest du eine <strong>rein digitale Fotobox</strong> oder eine <strong>digitale Fotobox mit Sofortdruckfunktion</strong>?
           </p>
           <div className="btnrow">
             {(["Digital", "Digital & Print"] as const).map((m) => (
@@ -262,7 +271,7 @@ export default function App() {
         </div>
 
         {/* 3) Gästezahl – nur bei Digital & Print */}
-        {sel.mode === "Digital & Print" && (
+        {showGuests && (
           <div className="bubble a">
             <div className="sectionTitle">Gästezahl</div>
             <div className="btnrow">
@@ -276,7 +285,7 @@ export default function App() {
         )}
 
         {/* 4) Druckformat – nur bei Digital & Print UND wenn Gäste gewählt */}
-        {sel.mode === "Digital & Print" && sel.guests && (
+        {showFormat && (
           <div className="bubble a focus">
             <div className="sectionTitle">Druckformat</div>
             <p>Welches Druckformat wünschst du dir?</p>
@@ -302,7 +311,7 @@ export default function App() {
         )}
 
         {/* 5) Druckpakete – nur bei Digital & Print UND wenn Format gewählt */}
-        {sel.mode === "Digital & Print" && sel.format && (
+        {showPrintPkgs && (
           <div className="bubble a">
             <div className="sectionTitle">Druckpakete</div>
             <div className="btnrow wrap threecol">
@@ -328,6 +337,7 @@ export default function App() {
         )}
 
         {/* 6) Zubehör – immer sichtbar */}
+        {showAccessories && (
         <div className="bubble a">
           <div className="sectionTitle">Zubehör (Mehrfachauswahl möglich)</div>
           <div className="note">Das zuerst gewählte Zubehör ist inklusive. Jedes weitere kostet 30 €.</div>
@@ -350,6 +360,7 @@ export default function App() {
             })}
           </div>
         </div>
+        )}
 
         {/* Zusammenfassung */}
         <div className="bubble sum">
@@ -357,7 +368,7 @@ export default function App() {
           <div className="sumrow"><span>Modus</span><b>{sel.mode ?? "–"}</b></div>
           <div className="sumrow"><span>Event</span><b>{sel.eventType ?? "–"}</b></div>
 
-          {sel.mode === "Digital & Print" && (
+          {showGuests && (
             <>
               <div className="sumrow"><span>Gäste</span><b>{sel.guests ?? "–"}</b></div>
               <div className="sumrow"><span>Format</span><b>{sel.format ?? "–"}</b></div>

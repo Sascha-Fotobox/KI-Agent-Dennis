@@ -16,7 +16,7 @@ body { background:#1e1e1c; color:#fff; font-family: system-ui, -apple-system, Se
 .logo { width:40px; height:40px; border-radius:10px; }
 .brandName { font-weight:800; letter-spacing: .2px; }
 .brandSub { color:#c9c9c2; font-size:13px; }
-.disclaimer { margin:10px 0 0; font-size:12px; line-height:1.45; color:#d6d6cf; white-space: pre-line; }
+.disclaimer { margin:10px 0 0; font-size:14px; line-height:1.45; color:#d6d6cf; white-space: pre-line; }
 
 .chat { padding: 16px 12px 40px; display:flex; flex-direction:column; gap:14px; }
 
@@ -71,3 +71,15 @@ button.card .btn-price { margin-top:6px; font-weight:700; }
 .sumrow { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #3a3a38; }
 .total { display:flex; justify-content:space-between; align-items:center; padding-top:10px; margin-top:6px; border-top:1px solid #3a3a38; }
 .total b{ font-size:20px; }
+
+
+/* Infoleiste für Grundpaket */
+.infobar{
+  background:#1b1b19;
+  border:1px solid #343432;
+  color:#e8e8e1;
+  padding:10px 12px;
+  border-radius:10px;
+  font-size:14px;
+  margin-bottom:10px;
+}
