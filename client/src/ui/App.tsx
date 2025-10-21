@@ -174,20 +174,8 @@ if (currentStepId === 35) {
   setSelections((p) => ({ ...p, selectedPrints: num }));
 
   addBot("Alles klar. Als Nächstes: Welches Druckformat möchtest du?");
-  setCurrentStepId(selections.mode === "Digital & Print" ? 35 : 4);
-  return;
-}
-));
-
-  addBot("Alles klar. Als Nächstes: Welches Druckformat möchtest du?");
   setCurrentStepId(4);
   return;
-}
-));
-  addBot("Alles klar. Als Nächstes: Welches Druckformat möchtest du?");
-  setCurrentStepId(4);
-  return;
-}
 }
 // Schritt 4 – Druckformat
     if (currentStepId === 4) {
