@@ -238,16 +238,7 @@ export default function App() {
       };
     });
   }, [sel]);
-    if (chosen.length === 0) return [];
-    const freeKey = chosen[0];
-    return chosen.map((key) => ({
-      key,
-      price: key === freeKey ? 0 : ACCESSORY_PRICES[key],
-      isFree: key === freeKey,
-    }));
-  }, [sel]);
-
-  return (
+return (
     <div className="app" style={{ background: themeBg, color: themeText }}>
       <header className="topbar">
         <div className="brandRow">
