@@ -345,6 +345,22 @@ function buildSummary(sel: Selections) {
   return "• " + parts.join("\n• ");
 }
 
+
+function priceOf(K: any, label: string): number {
+  const p = K?.pricing?.[label];
+  if (typeof p === "number") return p;
+  console.warn("Preis fehlt in knowledge.pricing für:", label);
+  return 0;
+}
+
+function answerByTitle(answers: any, title: string) {
+  for (const k of Object.keys(answers||{})) {
+    const a = answers[k];
+    if (a && typeof a === 'object' && (a.title === title || a.ask === title)) return a;
+  }
+  return null;
+}
+
 function buildPriceText(sel: Selections, K: Knowledge) {
   const p = K.pricing || {};
   const items: Array<{ label: string; price: number }> = [];
@@ -393,11 +409,11 @@ function buildPriceText(sel: Selections, K: Knowledge) {
 function recommendPrintPackageFromGuests(sel: Selections, K: Knowledge) {
   const g = sel.guests;
   let label = "";
-  if (g === "0–30 Personen") label = "200 Prints (Postkartenformat)";
+  if (g === "0–30 Personen") label = "100 Prints (Postkartenformat)";
   if (g === "30–50 Personen") label = "200 Prints (Postkartenformat)";
   if (g === "50–120 Personen") label = "400 Prints (Postkartenformat)";
   if (g === "120–250 Personen") label = "800 Prints (Postkartenformat, 1 Drucksystem)";
-  if (g === "ab 250 Personen") label = ""; // individuelle Beratung
+  if (g === "ab 250 Personen") label = "800 Prints (Postkartenformat, 2 Drucksysteme – Printpaket 802)";
   if (!label) return null;
   const price = K?.pricing?.[label];
   if (price == null) return null;
@@ -414,6 +430,28 @@ function normalizeEventKeyLocal(label?: string): string {
   if (/externes/i.test(s)) return "Externes Kundenevent";
   if (/öffentlich|party/i.test(s)) return "Öffentliche Veranstaltung";
   return s;
+
+  // --- Optional: Gala-Paket ---
+  const galaAns = answerByTitle(answers, "Gala-Paket (optional)");
+  if (galaAns && (galaAns.value === "Ja" || galaAns.selected === "Ja")) {
+    const galaLabel = "Gala-Paket";
+    const galaPrice = priceOf(K, galaLabel);
+    if (galaPrice) lines.push(`+ ${galaLabel}: ${galaPrice} €`), total += galaPrice;
+  }
+
+  // --- Optional: Betreuung vor Ort ---
+  const betreuAns = answerByTitle(answers, "Betreuung vor Ort (optional)");
+  if (betreuAns && (typeof betreuAns.value === "number" || typeof betreuAns.number === "number")) {
+    const hours = (typeof betreuAns.value === "number" ? betreuAns.value : betreuAns.number) || 0;
+    if (hours > 0) {
+      const rateLabel = "Betreuung vor Ort (€/h)";
+      const rate = priceOf(K, rateLabel);
+      const sum = rate * hours;
+      lines.push(`+ Betreuung vor Ort: ${hours} × ${rate} € = ${sum} €`);
+      total += sum;
+    }
+  }
+
 }
 
 export default App;

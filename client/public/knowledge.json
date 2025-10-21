@@ -233,6 +233,29 @@
     "800 Prints (Postkartenformat, 1 Drucksystem)": 250,
     "800 Prints (Postkartenformat, 2 Drucksysteme – Printpaket 802)": 280,
     "Gala-Paket": 80,
-    "Betreuung vor Ort (€/h)": 50
-  }
+    "Betreuung vor Ort (€/h)": 50,
+    "100 Prints (Postkartenformat)": 70
+  },
+  "steps": [
+    {
+      "id": 1,
+      "title": "Gala-Paket (optional)",
+      "ask": "Möchtest du das Gala-Paket zusätzlich buchen?",
+      "buttons": [
+        "Ja",
+        "Nein"
+      ],
+      "note": "Gala-Paket ist ein optionales Upgrade für einen edleren Auftritt."
+    },
+    {
+      "id": 2,
+      "title": "Betreuung vor Ort (optional)",
+      "ask": "Soll eine Betreuungsperson vor Ort eingeplant werden? Wenn ja, wähle bitte die Stundenanzahl.",
+      "type": "number",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "unit": "Stunden"
+    }
+  ]
 }
