@@ -1,23 +1,29 @@
 import "./App.css";
+import React, { useEffect, useMemo, useState } from "react";
+import logoUrl from "/fobi-logo.png";
 import ConsentDeclined from "./components/ConsentDeclined";
 import ConsentGate, { STORAGE_KEY_BASE } from "./components/ConsentGate";
 
 function sectionLabel(id: number) {
   switch (id) {
-    case 1: return "Nutzungsart";
-    case 2: return "Veranstaltungstyp";
-    case 3: return "Gästeanzahl";
-    case 35: return "Printmenge";
-    case 4: return "Druckformat";
-    case 5: return "Zubehör";
-    default: return "";
+    case 1:
+      return "Nutzungsart";
+    case 2:
+      return "Veranstaltungstyp";
+    case 3:
+      return "Gästeanzahl";
+    case 35:
+      return "Printmenge";
+    case 4:
+      return "Druckformat";
+    case 5:
+      return "Zubehör";
+    default:
+      return "";
   }
 }
 
-// src/ui/App.tsx
-import React, { useEffect, useMemo, useState } from "react";
-import logoUrl from "/fobi-logo.png";
-
+// Types
 type Knowledge = any;
 type Step = any;
 
@@ -38,6 +44,172 @@ type Message = { role: "assistant" | "user"; text: string };
 const GITHUB_RAW =
   "https://raw.githubusercontent.com/Sascha-Fotobox/KI-Agent-Dennis/main/public/knowledge.json";
 
+// Helpers
+function normalizeEventKey(label?: string): string {
+  if (!label) return "";
+  const s = label.trim().replace(/\s*\(z\.\s*B\..*?\)\s*$/i, "");
+  if (/geburt/i.test(s)) return "Geburtstag";
+  if (/hochzeit/i.test(s)) return "Hochzeit";
+  if (/abschluss/i.test(s)) return "Abschlussball";
+  if (/internes/i.test(s)) return "Internes Mitarbeiterevent";
+  if (/externes/i.test(s)) return "Externes Kundenevent";
+  if (/öffentlich|party/i.test(s)) return "Öffentliche Veranstaltung";
+  return s;
+}
+
+function renderAccessoryButtons(
+  subIndex: number,
+  step5: any,
+  onChoice: (choice: string) => void
+) {
+  const substeps = step5?.substeps ?? [];
+  const sub = substeps[subIndex];
+  if (!sub) return null;
+  const btns: string[] = sub.buttons ?? [];
+  return (
+    <div className="buttons">
+      {btns.map((b: any) => (
+        <button key={b} onClick={() => onChoice(b)}>
+          {b}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function buildSummary(sel: Selections) {
+  const parts: string[] = [];
+  parts.push(
+    `Modus: ${
+      sel.mode === "Digital"
+        ? "Digital (Fobi Smart, digitale Nutzung inkl.)"
+        : "Digital & Print"
+    }`
+  );
+  if (sel.eventType) parts.push(`Event: ${sel.eventType}`);
+  if (sel.guests) parts.push(`Gäste: ${sel.guests}`);
+  if (sel.format) {
+    parts.push(
+      `Druckformat: ${
+        sel.format === "Postkarte"
+          ? "Postkartenformat (10×15)"
+          : sel.format === "Streifen"
+          ? "Fotostreifen (5×15)"
+          : "Großbildformat (15×20)"
+      }`
+    );
+  }
+  const acc = sel.accessories || {};
+  const accList: string[] = [];
+  if (acc.requisiten) accList.push("Requisiten");
+  if (acc.hintergrund) accList.push("Hintergrund");
+  if (acc.layout) accList.push("Individuelles Layout");
+  if (accList.length) parts.push(`Zubehör: ${accList.join(", ")}`);
+  if (sel.printRecommendation) parts.push(`Empfehlung: ${sel.printRecommendation}`);
+  parts.push(
+    "Hinweise: 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen; beim Großbildformat entspricht ein Printpaket 200 → 100 Großbild-Prints."
+  );
+  return "• " + parts.join("\n• ");
+}
+
+function recommendPrintPackageFromGuests(sel: Selections, K: Knowledge) {
+  const g = sel.guests;
+  let label = "";
+  if (g === "0–30 Personen") label = "200 Prints (Postkartenformat)";
+  if (g === "30–50 Personen") label = "200 Prints (Postkartenformat)";
+  if (g === "50–120 Personen") label = "400 Prints (Postkartenformat)";
+  if (g === "120–250 Personen") label = "800 Prints (Postkartenformat, 1 Drucksystem)";
+  if (g === "ab 250 Personen") label = ""; // individuelle Beratung
+  if (!label) return null;
+  const price = K?.pricing?.[label];
+  if (price == null) return null;
+  return { label, price };
+}
+
+function buildPriceText(sel: Selections, K: Knowledge) {
+  const p = K?.pricing || {};
+  const items: Array<{ label: string; price: number }> = [];
+
+  // 1) Grundpaket immer ansetzen
+  items.push({
+    label: "Grundpaket (digitale Nutzung inkl.)",
+    price: p["Digitalpaket (Fobi Smart)"] ?? 0,
+  });
+
+  // 2) Prints nach Auswahl/Format (nur bei Digital & Print)
+  if (sel.mode === "Digital & Print") {
+    let packPost = sel.selectedPrints || 0; // gewünschte Gesamtprints in Postkarten-Einheiten
+    let packUsed = packPost;
+
+    if (sel.bothFormats) {
+      // Bei beiden Formaten: größeres Paket aus Postkarte vs. (Fotostreifen -> Postkartenäquivalent)
+      const packStripesAsPost = Math.ceil(packPost / 2); // 2 Streifen = 1 Postkarte
+      packUsed = Math.max(packPost, packStripesAsPost);
+    } else if (sel.format === "Streifen") {
+      packUsed = Math.ceil(packPost / 2);
+    } else {
+      packUsed = packPost;
+    }
+
+    // Wähle passenden Pricing-Key (auf Postkartenbasis)
+    let labelKey = "";
+    if (packUsed === 100) labelKey = "100 Prints (Postkartenformat)";
+    if (packUsed === 200) labelKey = "200 Prints (Postkartenformat)";
+    if (packUsed === 400) labelKey = "400 Prints (Postkartenformat)";
+    if (packUsed === 800) {
+      labelKey =
+        p["800 Prints (Postkartenformat, 1 Drucksystem)"] != null
+          ? "800 Prints (Postkartenformat, 1 Drucksystem)"
+          : "800 Prints (Postkartenformat, 2 Drucksysteme – Printpaket 802)";
+    }
+
+    let price = 0;
+    if (labelKey && p[labelKey] != null) {
+      price = p[labelKey];
+    } else if (packUsed === 100 && p["200 Prints (Postkartenformat)"] != null) {
+      // Fallback: halber Preis vom 200er, falls 100er nicht gepflegt
+      price = Math.round((p["200 Prints (Postkartenformat)"] as number) / 2);
+      labelKey = "100 Prints (Postkartenformat)";
+    }
+
+    if (packUsed > 0 && (price || price === 0)) {
+      items.push({ label: labelKey || `${packUsed} Prints (Postkartenformat)`, price });
+    }
+
+    // Zusätzliche Layoutkosten, wenn beide Formate (zweites Layout notwendig)
+    if (sel.bothFormats) {
+      // Standard: zweites Layout auf Basis des ersten = 20 €
+      items.push({ label: "Zusätzliches Drucklayout (gleiches Design)", price: 20 });
+      // Hinweis: Für komplett neues Zweitlayout wären es 50 € (kann später auswählbar gemacht werden)
+    }
+  }
+
+  // 3) Zubehör: 1 Paket inklusive, weitere kostenpflichtig
+  const acc = sel.accessories || {};
+  const chosen = ["requisiten", "hintergrund", "layout"].filter((k) => (acc as any)[k]);
+  const oneAccessoryIncludedInfo =
+    "1 Zubehörpaket inklusive (Requisiten ODER Hintergrund ODER Layout)";
+  if (chosen.length > 1) {
+    const extras = chosen.length - 1;
+    const addPrice = K?.pricing?.["Jedes weitere Zubehörpaket"] || 0;
+    if (addPrice > 0) {
+      items.push({
+        label: `Weitere Zubehörpakete (${extras}×)`,
+        price: extras * addPrice,
+      });
+    }
+  }
+
+  const sum = items.reduce((a, b) => a + (b.price || 0), 0);
+  const lines = items.map((i) =>
+    i.price > 0 ? `• ${i.label}: ${i.price} €` : `• ${i.label}`
+  );
+  lines.unshift(`• ${oneAccessoryIncludedInfo}`);
+  lines.push(`\n**Gesamtsumme: ${sum} €**`);
+  return lines.join("\n");
+}
+
+// Component
 const App: React.FC = () => {
   const [K, setK] = useState<Knowledge | null>(null);
   const [kError, setKError] = useState<string | null>(null);
@@ -90,19 +262,6 @@ const App: React.FC = () => {
   const addUser = (text: string) => setMessages((m) => [...m, { role: "user", text }]);
   const stepById = (id: number): Step | undefined =>
     K?.button_flow?.steps?.find((s: any) => s.id === id);
-
-  // Mappe Button-Labels → Schlüssel (für special_contexts)
-  const normalizeEventKey = (label?: string): string => {
-    if (!label) return "";
-    const s = label.trim().replace(/\s*\(z\.\s*B\..*?\)\s*$/i, "");
-    if (/geburt/i.test(s)) return "Geburtstag";
-    if (/hochzeit/i.test(s)) return "Hochzeit";
-    if (/abschluss/i.test(s)) return "Abschlussball";
-    if (/internes/i.test(s)) return "Internes Mitarbeiterevent";
-    if (/externes/i.test(s)) return "Externes Kundenevent";
-    if (/öffentlich|party/i.test(s)) return "Öffentliche Veranstaltung";
-    return s;
-  };
 
   // Startnachricht sobald Knowledge geladen ist
   useEffect(() => {
@@ -166,31 +325,36 @@ const App: React.FC = () => {
       return;
     }
 
-    
+    // Schritt 3.5 – Anzahl Prints wählen (nur bei Digital & Print)
+    if (currentStepId === 35) {
+      const num = parseInt((choice.match(/\d+/) || [])[0] || "0", 10) as 100 | 200 | 400 | 800;
+      setSelections((p) => ({ ...p, selectedPrints: num }));
 
-// Schritt 3.5 – Anzahl Prints wählen (nur bei Digital & Print)
-if (currentStepId === 35) {
-  const num = parseInt((choice.match(/\d+/) || [])[0] || "0", 10) as 100 | 200 | 400 | 800;
-  setSelections((p) => ({ ...p, selectedPrints: num }));
+      addBot("Alles klar. Als Nächstes: Welches Druckformat möchtest du?");
+      setCurrentStepId(4);
+      return;
+    }
 
-  addBot("Alles klar. Als Nächstes: Welches Druckformat möchtest du?");
-  setCurrentStepId(4);
-  return;
-}
-// Schritt 4 – Druckformat
+    // Schritt 4 – Druckformat
     if (currentStepId === 4) {
       const isBoth = choice.includes("Postkarten- und Fotostreifenformat");
       const format: Selections["format"] = choice.startsWith("📸")
         ? "Postkarte"
         : choice.startsWith("🎞️")
         ? "Streifen"
-        : (isBoth ? "Postkarte" : "Großbild");
+        : isBoth
+        ? "Postkarte"
+        : "Großbild";
       setSelections((p) => ({ ...p, format, bothFormats: isBoth }));
       if (!isBoth && format === "Streifen" && (selections.selectedPrints || 0) === 100) {
-        addBot("Hinweis: 100 Prints entsprechen 200 Fotostreifen. Mindestabnahme für Fotostreifen sind 200 – das passt also. 👍");
+        addBot(
+          "Hinweis: 100 Prints entsprechen 200 Fotostreifen. Mindestabnahme für Fotostreifen sind 200 – das passt also. 👍"
+        );
       }
       if (isBoth) {
-        addBot("Du hast Postkarten- und Fotostreifenformat gewählt. Vor Ort kannst du je Bild zwischen Postkarte und Fotostreifen wählen. Ich wähle automatisch das größere Printpaket für dich.");
+        addBot(
+          "Du hast Postkarten- und Fotostreifenformat gewählt. Vor Ort kannst du je Bild zwischen Postkarte und Fotostreifen wählen. Ich wähle automatisch das größere Printpaket für dich."
+        );
       }
       const s4 = stepById(4) as any;
       const rec = s4?.recommendations?.[choice] || "";
@@ -227,9 +391,12 @@ if (currentStepId === 35) {
         const summary = buildSummary(selections);
         const priceText = buildPriceText(selections, K);
         addBot(
-          ["Kurze Zusammenfassung deiner Auswahl:", summary, "Transparente Preisübersicht:", priceText].join(
-            "\n\n"
-          )
+          [
+            "Kurze Zusammenfassung deiner Auswahl:",
+            summary,
+            "Transparente Preisübersicht:",
+            priceText,
+          ].join("\n\n")
         );
       }
       return;
@@ -247,54 +414,65 @@ if (currentStepId === 35) {
     }
   }, [currentStepId, K]);
 
-  if (kError) {
-    function restartAll() {
-  if (!confirm("Willst du wirklich neu starten? Deine bisherigen Angaben gehen verloren.")) return;
-  setSelections({});
-  setCurrentStepId(1);
-  setMessages([
-    {
-      role: "assistant",
-      text:
-        "Hi! Ich begleite dich Schritt für Schritt zur passenden Fotobox. Möchtest du die Fotobox 🖥️ Digital nutzen oder 📸 Digital & Print?",
-    },
-  ]);
-}
-  const current = stepById(currentStepId);
-type Btn = { label: string; value?: string } | string;
-const buttons: Btn[] = useMemo(() => {
-  if (currentStepId === 35) {
-    return ["100 Prints","200 Prints","400 Prints","800 Prints"];
+  // Restart helper (used in all render branches)
+  function restartAll() {
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm(
+        "Willst du wirklich neu starten? Deine bisherigen Angaben gehen verloren."
+      )
+    )
+      return;
+    setSelections({});
+    setCurrentStepId(1);
+    setMessages([
+      {
+        role: "assistant",
+        text:
+          "Hi! Ich begleite dich Schritt für Schritt zur passenden Fotobox. Möchtest du die Fotobox 🖥️ Digital nutzen oder 📸 Digital & Print?",
+      },
+    ]);
   }
-  const opts = (current as any)?.buttons ?? (current as any)?.options ?? [];
-  return Array.isArray(opts) ? opts : [];
-}, [current, currentStepId]);
-return (
+
+  // Current step + buttons are needed across branches
+  const current = useMemo(() => stepById(currentStepId), [currentStepId, K]);
+
+  type Btn = { label: string; value?: string } | string;
+  const buttons: Btn[] = useMemo(() => {
+    if (currentStepId === 35) {
+      return ["100 Prints", "200 Prints", "400 Prints", "800 Prints"];
+    }
+    const opts = (current as any)?.buttons ?? (current as any)?.options ?? [];
+    return Array.isArray(opts) ? opts : [];
+  }, [current, currentStepId]);
+
+  // Optional: Consent gate (only render if you actually use it elsewhere)
+  if (consent === "declined") {
+    return <ConsentDeclined />;
+  }
+
+  // Error branch (knowledge failed to load)
+  if (kError) {
+    return (
       <div className="app">
         <header className="header">
-  <div className="brand">
-    <img src="/fobi-logo.png" alt="FOBI Fotobox Logo" className="brand-logo" width={44} height={44} />
-    <div className="brand-txt">
-      <div className="brand-title">{K.brand} – Assistent „{K.assistant_name}“</div>
-      <small className="brand-sub">{K.privacy_notice}</small>
-    </div>
-  </div>
-  <button
-    className="restart-btn"
-    data-testid="restart-chat"
-    title="Chat neu starten"
-    onClick={restartAll}
-  >
-    ↻ Neu starten
-  </button>
-</header>
+          <div className="brand">
+            <img src="/fobi-logo.png" alt="FOBI Fotobox Logo" className="brand-logo" width={44} height={44} />
+            <div className="brand-txt">
+              <div className="brand-title">{K?.brand ?? "FOBI"} – Assistent „{K?.assistant_name ?? "Dennis"}“</div>
+              <small className="brand-sub">{K?.privacy_notice ?? "Datenschutzhinweis lädt nicht."}</small>
+            </div>
+          </div>
+          <button className="restart-btn" data-testid="restart-chat" title="Chat neu starten" onClick={restartAll}>
+            ↻ Neu starten
+          </button>
+        </header>
         <main className="chat">
           <div className="msg assistant">
             <div className="bubble">
               <strong>Fehler beim Laden der Knowledge-Datei.</strong>
               {"\n"}Details: {kError}
-              {"\n"}Der Assistent versucht zuerst GitHub RAW zu laden. Prüfe, ob die Datei dort öffentlich
-              erreichbar ist.
+              {"\n"}Der Assistent versucht zuerst GitHub RAW zu laden. Prüfe, ob die Datei dort öffentlich erreichbar ist.
             </div>
           </div>
         </main>
@@ -302,26 +480,46 @@ return (
     );
   }
 
+  // Loading branch
   if (!K) {
     return (
       <div className="app">
         <header className="header">
-  <div className="brand">
-    <img src={logoUrl} alt="FOBI Fotobox Logo" className="brand-logo" width={44} height={44} />
-    <div className="brand-txt">
-      <div className="brand-title">{K.brand} – Assistent „{K.assistant_name}“</div>
-      <small className="brand-sub">{K.privacy_notice}</small>
-    </div>
-  </div>
-  <button
-    className="restart-btn"
-    data-testid="restart-chat"
-    title="Chat neu starten"
-    onClick={restartAll}
-  >
-    ↻ Neu starten
-  </button>
-</header>
+          <div className="brand">
+            <img src={logoUrl} alt="FOBI Fotobox Logo" className="brand-logo" width={44} height={44} />
+            <div className="brand-txt">
+              <div className="brand-title">Assistent lädt …</div>
+              <small className="brand-sub">Bitte einen Moment Geduld.</small>
+            </div>
+          </div>
+          <button className="restart-btn" data-testid="restart-chat" title="Chat neu starten" onClick={restartAll}>
+            ↻ Neu starten
+          </button>
+        </header>
+        <main className="chat">
+          <div className="msg assistant">
+            <div className="bubble">Inhalte werden geladen …</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Default render (knowledge present)
+  return (
+    <div className="app">
+      <header className="header">
+        <div className="brand">
+          <img src="/fobi-logo.png" alt="FOBI Fotobox Logo" className="brand-logo" width={44} height={44} />
+          <div className="brand-txt">
+            <div className="brand-title">{K.brand} – Assistent „{K.assistant_name}“</div>
+            <small className="brand-sub">{K.privacy_notice}</small>
+          </div>
+        </div>
+        <button className="restart-btn" data-testid="restart-chat" title="Chat neu starten" onClick={restartAll}>
+          ↻ Neu starten
+        </button>
+      </header>
 
       <main className="chat">
         {messages.map((m, i) => (
@@ -331,9 +529,33 @@ return (
         ))}
 
         <div className="step">
-          {sectionLabel(currentStepId) && <div className="section-label">{sectionLabel(currentStepId)}</div>}
-{currentStepId === 35 ? <h2>Wie viele Prints möchtest du insgesamt?</h2> : (current?.title && <h2>{current?.title}</h2>)}\n{currentStepId === 35 ? (<>\n  <p className="ask">Wähle bitte die gewünschte Gesamtmenge an Prints: 100, 200, 400 oder 800.</p>\n  <div className="info"><strong>Empfehlung nach Gästezahl</strong><ul>\n    <li>0–30 Personen: 100 Prints</li>\n    <li>30–50 Personen: 200 Prints</li>\n    <li>50–120 Personen: 400 Prints</li>\n    <li>120–250 Personen: 800 Prints</li>\n    <li>ab 250 Personen: Nach individueller Absprache</li>\n  </ul></div>\n</>) : (current?.ask && <p className="ask">{current?.ask}</p>)}
-          {currentStepId === 35 ? <p className="ask">Wähle bitte die gewünschte Gesamtmenge an Prints: 100, 200, 400 oder 800.</p> : (current?.ask && <p className="ask">{current?.ask}</p>)}
+          {sectionLabel(currentStepId) && (
+            <div className="section-label">{sectionLabel(currentStepId)}</div>
+          )}
+
+          {currentStepId === 35 ? (
+            <>
+              <h2>Wie viele Prints möchtest du insgesamt?</h2>
+              <p className="ask">
+                Wähle bitte die gewünschte Gesamtmenge an Prints: 100, 200, 400 oder 800.
+              </p>
+              <div className="info">
+                <strong>Empfehlung nach Gästezahl</strong>
+                <ul>
+                  <li>0–30 Personen: 100 Prints</li>
+                  <li>30–50 Personen: 200 Prints</li>
+                  <li>50–120 Personen: 400 Prints</li>
+                  <li>120–250 Personen: 800 Prints</li>
+                  <li>ab 250 Personen: Nach individueller Absprache</li>
+                </ul>
+              </div>
+            </>
+          ) : (
+            <>
+              {current?.title && <h2>{(current as any).title}</h2>}
+              {current?.ask && <p className="ask">{(current as any).ask}</p>}
+            </>
+          )}
 
           {currentStepId === 4 && (
             <div className="info">
@@ -349,15 +571,14 @@ return (
           {buttons.length > 0 && (
             <div className="buttons">
               {buttons.map((b: any) => (
-                <button key={b} onClick={() => onChoice(b)}>
-                  {b}
+                <button key={typeof b === "string" ? b : b.label} onClick={() => onChoice(typeof b === "string" ? b : b.label)}>
+                  {typeof b === "string" ? b : b.label}
                 </button>
               ))}
             </div>
           )}
 
-          {currentStepId === 5 &&
-            renderAccessoryButtons(subIndex, stepById(5) as any, onChoice)}
+          {currentStepId === 5 && renderAccessoryButtons(subIndex, stepById(5) as any, onChoice)}
         </div>
       </main>
 
@@ -368,171 +589,4 @@ return (
   );
 };
 
-function renderAccessoryButtons(
-  subIndex: number,
-  step5: any,
-  onChoice: (choice: string) => void
-) {
-  const substeps = step5?.substeps ?? [];
-  const sub = substeps[subIndex];
-  if (!sub) return null;
-  const btns: string[] = sub.buttons ?? [];
-  return (
-    <div className="buttons">
-      {btns.map((b: any) => (
-        <button key={b} onClick={() => onChoice(b)}>
-          {b}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function buildSummary(sel: Selections) {
-  const parts: string[] = [];
-  parts.push(
-    `Modus: ${
-      sel.mode === "Digital"
-        ? "Digital (Fobi Smart, digitale Nutzung inkl.)"
-        : "Digital & Print"
-    }`
-  );
-  if (sel.eventType) parts.push(`Event: ${sel.eventType}`);
-  if (sel.guests) parts.push(`Gäste: ${sel.guests}`);
-  if (sel.format) {
-    parts.push(
-      `Druckformat: ${
-        sel.format === "Postkarte"
-          ? "Postkartenformat (10×15)"
-          : sel.format === "Streifen"
-          ? "Fotostreifen (5×15)"
-          : "Großbildformat (15×20)"
-      }`
-    );
-  }
-  const acc = sel.accessories || {};
-  const accList: string[] = [];
-  if (acc.requisiten) accList.push("Requisiten");
-  if (acc.hintergrund) accList.push("Hintergrund");
-  if (acc.layout) accList.push("Individuelles Layout");
-  if (accList.length) parts.push(`Zubehör: ${accList.join(", ")}`);
-  if (sel.printRecommendation) parts.push(`Empfehlung: ${sel.printRecommendation}`);
-  parts.push(
-    "Hinweise: 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen; beim Großbildformat entspricht ein Printpaket 200 → 100 Großbild-Prints."
-  );
-  return "• " + parts.join("\n• ");
-}
-
-
-function recommendPrintPackageFromGuests(sel: Selections, K: Knowledge) {
-  const g = sel.guests;
-  let label = "";
-  if (g === "0–30 Personen") label = "200 Prints (Postkartenformat)";
-  if (g === "30–50 Personen") label = "200 Prints (Postkartenformat)";
-  if (g === "50–120 Personen") label = "400 Prints (Postkartenformat)";
-  if (g === "120–250 Personen") label = "800 Prints (Postkartenformat, 1 Drucksystem)";
-  if (g === "ab 250 Personen") label = ""; // individuelle Beratung
-  if (!label) return null;
-  const price = K?.pricing?.[label];
-  if (price == null) return null;
-  return { label, price };
-}
-
-function normalizeEventKeyLocal(label?: string): string {
-  if (!label) return "";
-  const s = label.trim().replace(/\s*\(z\.\s*B\..*?\)\s*$/i, "");
-  if (/geburt/i.test(s)) return "Geburtstag";
-  if (/hochzeit/i.test(s)) return "Hochzeit";
-  if (/abschluss/i.test(s)) return "Abschlussball";
-  if (/internes/i.test(s)) return "Internes Mitarbeiterevent";
-  if (/externes/i.test(s)) return "Externes Kundenevent";
-  if (/öffentlich|party/i.test(s)) return "Öffentliche Veranstaltung";
-  return s;
-}
-
-}
-
 export default App;
-
-
-function buildPriceText(sel: Selections, K: Knowledge) {
-  const p = K.pricing || {};
-  const items: Array<{ label: string; price: number }> = [];
-
-  // 1) Grundpaket immer ansetzen
-  items.push({
-    label: "Grundpaket (digitale Nutzung inkl.)",
-    price: p["Digitalpaket (Fobi Smart)"] ?? 0,
-  });
-
-  // 2) Prints nach Auswahl/Format (nur bei Digital & Print)
-  if (sel.mode === "Digital & Print") {
-    let packPost = sel.selectedPrints || 0; // gewünschte Gesamtprints in Postkarten-Einheiten
-    let packUsed = packPost;
-
-    if (sel.bothFormats) {
-      // Bei beiden Formaten: größeres Paket aus Postkarte vs. (Fotostreifen -> Postkartenäquivalent)
-      const packStripesAsPost = Math.ceil(packPost / 2); // 2 Streifen = 1 Postkarte
-      packUsed = Math.max(packPost, packStripesAsPost);
-    } else if (sel.format === "Streifen") {
-      packUsed = Math.ceil(packPost / 2);
-    } else {
-      packUsed = packPost;
-    }
-
-    // Wähle passenden Pricing-Key (auf Postkartenbasis)
-    let labelKey = "";
-    if (packUsed === 100) labelKey = "100 Prints (Postkartenformat)";
-    if (packUsed === 200) labelKey = "200 Prints (Postkartenformat)";
-    if (packUsed === 400) labelKey = "400 Prints (Postkartenformat)";
-    if (packUsed === 800) {
-      labelKey = p["800 Prints (Postkartenformat, 1 Drucksystem)"] != null
-        ? "800 Prints (Postkartenformat, 1 Drucksystem)"
-        : "800 Prints (Postkartenformat, 2 Drucksysteme – Printpaket 802)";
-    }
-
-    let price = 0;
-    if (labelKey && p[labelKey] != null) {
-      price = p[labelKey];
-    } else if (packUsed === 100 && p["200 Prints (Postkartenformat)"] != null) {
-      // Fallback: halber Preis vom 200er, falls 100er nicht gepflegt
-      price = Math.round((p["200 Prints (Postkartenformat)"] as number) / 2);
-      labelKey = "100 Prints (Postkartenformat)";
-    }
-
-    if (packUsed > 0 && (price || price === 0)) {
-      items.push({ label: labelKey || `${packUsed} Prints (Postkartenformat)`, price });
-    }
-
-    // Zusätzliche Layoutkosten, wenn beide Formate (zweites Layout notwendig)
-    if (sel.bothFormats) {
-      // Standard: zweites Layout auf Basis des ersten = 20 €
-      items.push({ label: "Zusätzliches Drucklayout (gleiches Design)", price: 20 });
-      // Hinweis: Für komplett neues Zweitlayout wären es 50 € (kann später auswählbar gemacht werden)
-    }
-  }
-
-  // 3) Zubehör: 1 Paket inklusive, weitere kostenpflichtig
-  const acc = sel.accessories || {};
-  const chosen = ["requisiten", "hintergrund", "layout"].filter((k) => (acc as any)[k]);
-  const oneAccessoryIncludedInfo = "1 Zubehörpaket inklusive (Requisiten ODER Hintergrund ODER Layout)";
-  if (chosen.length > 1) {
-    const extras = chosen.length - 1;
-    const addPrice = K.pricing?.["Jedes weitere Zubehörpaket"] || 0;
-    if (addPrice > 0) {
-      items.push({
-        label: `Weitere Zubehörpakete (${extras}×)`,
-        price: extras * addPrice,
-      });
-    }
-  }
-
-  const sum = items.reduce((a, b) => a + (b.price || 0), 0);
-  const lines = items.map((i) =>
-    i.price > 0 ? `• ${i.label}: ${i.price} €` : `• ${i.label}`
-  );
-  lines.unshift(`• ${oneAccessoryIncludedInfo}`);
-  lines.push(`
-**Gesamtsumme: ${sum} €**`);
-  return lines.join("\n");
-}
