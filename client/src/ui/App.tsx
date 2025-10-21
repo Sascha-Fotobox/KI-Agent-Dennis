@@ -282,7 +282,7 @@ export default function App() {
         ? `⚠️ Bitte Preis für **${pkgLabel}** in der Datei **public/knowledge.json** setzen (derzeit 0 €).`
         : undefined;
 
-      const layoutWarn = selections.format === "Beide" and K?.pricing?.["Zusätzliches Drucklayout (gleiches Designbasis)"] === 0
+      const layoutWarn = selections.format === "Beide" && K?.pricing?.["Zusätzliches Drucklayout (gleiches Designbasis)"] === 0
         ? "⚠️ Bitte Preis für **Zweites Drucklayout** auf >0 € setzen."
         : undefined;
 
