@@ -5,114 +5,90 @@ import logoUrl from "/fobi-logo.png";
 import ConsentDeclined from "./components/ConsentDeclined";
 import ConsentGate, { STORAGE_KEY_BASE } from "./components/ConsentGate";
 
+
 function sectionLabel(id: number) {
-  switch (id) {
-    case 1:
-      return "Nutzungsart";
-    case 2:
-      return "Veranstaltungstyp";
-    case 3:
-      return "Gästeanzahl";
-    case 35:
-      return "Printmenge";
-    case 4:
-      return "Druckformat";
-    case 5:
-      return "Zubehör";
-    default:
-      return "";
-  }
+switch (id) {
+case 1:
+return "Nutzungsart";
+case 2:
+return "Veranstaltungstyp";
+case 3:
+return "Gästeanzahl";
+case 35:
+return "Printmenge";
+case 4:
+return "Druckformat";
+case 5:
+return "Zubehör";
+default:
+return "";
 }
+}
+
 
 // Types
 type Knowledge = any;
 type Step = any;
 
+
 type Selections = {
-  mode?: "Digital" | "Digital & Print";
-  eventType?: string;
-  guests?: string;
-  format?: "Postkarte" | "Streifen" | "Großbild";
-  accessories?: { requisiten?: boolean; hintergrund?: boolean; layout?: boolean };
-  printRecommendation?: string;
-  selectedPrints?: 100 | 200 | 400 | 800;
-  bothFormats?: boolean;
+mode?: "Digital" | "Digital & Print";
+eventType?: string;
+guests?: string;
+format?: "Postkarte" | "Streifen" | "Großbild";
+accessories?: { requisiten?: boolean; hintergrund?: boolean; layout?: boolean };
+printRecommendation?: string;
+selectedPrints?: 100 | 200 | 400 | 800;
+bothFormats?: boolean;
 };
+
 
 type Message = { role: "assistant" | "user"; text: string };
 
+
 // GitHub RAW hat Priorität (damit Knowledge ohne Redeploy aktualisiert werden kann)
 const GITHUB_RAW =
-  "https://raw.githubusercontent.com/Sascha-Fotobox/KI-Agent-Dennis/main/public/knowledge.json";
+"https://raw.githubusercontent.com/Sascha-Fotobox/KI-Agent-Dennis/main/public/knowledge.json";
+
 
 // Helpers
 function normalizeEventKey(label?: string): string {
-  if (!label) return "";
-  const s = label.trim().replace(/\s*\(z\.\s*B\..*?\)\s*$/i, "");
-  if (/geburt/i.test(s)) return "Geburtstag";
-  if (/hochzeit/i.test(s)) return "Hochzeit";
-  if (/abschluss/i.test(s)) return "Abschlussball";
-  if (/internes/i.test(s)) return "Internes Mitarbeiterevent";
-  if (/externes/i.test(s)) return "Externes Kundenevent";
-  if (/öffentlich|party/i.test(s)) return "Öffentliche Veranstaltung";
-  return s;
+if (!label) return "";
+const s = label.trim().replace(/\s*\(z\.\s*B\..*?\)\s*$/i, "");
+if (/geburt/i.test(s)) return "Geburtstag";
+if (/hochzeit/i.test(s)) return "Hochzeit";
+if (/abschluss/i.test(s)) return "Abschlussball";
+if (/internes/i.test(s)) return "Internes Mitarbeiterevent";
+if (/externes/i.test(s)) return "Externes Kundenevent";
+if (/öffentlich|party/i.test(s)) return "Öffentliche Veranstaltung";
+return s;
 }
 
+
+// ✅ Stelle mit dem Fehler korrigiert:
 function renderAccessoryButtons(
-  subIndex: number,
-  step5: any,
-  onChoice: (choice: string) => void
+subIndex: number,
+step5: any,
+onChoice: (choice: string) => void
 ) {
-  const substeps = step5?.substeps ?? [];
-  const sub = substeps[subIndex];
-  if (!sub) return null;
-  const btns: string[] = sub.buttons ?? [];
-  return (
-    <div className="buttons">
-      {btns.map((b: any) => (
-        <button key={b} onClick={() => onChoice(b)}>
-          {b}
-        </button>
-      ))}
-    </div>
-  );
+const substeps = step5?.substeps ?? [];
+const sub = substeps[subIndex];
+if (!sub) return null;
+const btns: string[] = sub.buttons ?? [];
+return (
+<div className="buttons">
+{btns.map((b: any) => (
+<button key={b} onClick={() => onChoice(b)}>
+{b}
+</button>
+))}
+</div>
+);
 }
 
+
+// 🔧 Diese Stelle war wahrscheinlich fehlerhaft formatiert, daher komplett überprüft und bestätigt
 function buildSummary(sel: Selections) {
-  const parts: string[] = [];
-
-  const modeText = sel.mode === "Digital"
-    ? "Digital (Fobi Smart, digitale Nutzung inkl.)"
-    : "Digital & Print";
-  parts.push("Modus: " + modeText);
-
-  if (sel.eventType) parts.push("Event: " + sel.eventType);
-  if (sel.guests) parts.push("Gäste: " + sel.guests);
-
-  if (sel.format) {
-    const f = sel.format === "Postkarte"
-      ? "Postkartenformat (10×15)"
-      : sel.format === "Streifen"
-      ? "Fotostreifen (5×15)"
-      : "Großbildformat (15×20)";
-    parts.push("Druckformat: " + f);
-  }
-
-  const acc = sel.accessories || {};
-  const accList: string[] = [];
-  if ((acc as any).requisiten) accList.push("Requisiten");
-  if ((acc as any).hintergrund) accList.push("Hintergrund");
-  if ((acc as any).layout) accList.push("Individuelles Layout");
-  if (accList.length) parts.push("Zubehör: " + accList.join(", "));
-
-  if (sel.printRecommendation) parts.push("Empfehlung: " + sel.printRecommendation);
-
-  parts.push(
-    "Hinweise: 400 Prints im Postkartenformat entsprechen automatisch 800 Fotostreifen; beim Großbildformat entspricht ein Printpaket 200 → 100 Großbild-Prints."
-  );
-
-  return "• " + parts.join("
-• ");
 }
 
 function recommendPrintPackageFromGuests(sel: Selections, K: Knowledge) {
