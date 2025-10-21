@@ -430,28 +430,7 @@ function normalizeEventKeyLocal(label?: string): string {
   if (/externes/i.test(s)) return "Externes Kundenevent";
   if (/öffentlich|party/i.test(s)) return "Öffentliche Veranstaltung";
   return s;
-
-  // --- Optional: Gala-Paket ---
-  const galaAns = answerByTitle(answers, "Gala-Paket (optional)");
-  if (galaAns && (galaAns.value === "Ja" || galaAns.selected === "Ja")) {
-    const galaLabel = "Gala-Paket";
-    const galaPrice = priceOf(K, galaLabel);
-    if (galaPrice) lines.push(`+ ${galaLabel}: ${galaPrice} €`), total += galaPrice;
-  }
-
-  // --- Optional: Betreuung vor Ort ---
-  const betreuAns = answerByTitle(answers, "Betreuung vor Ort (optional)");
-  if (betreuAns && (typeof betreuAns.value === "number" || typeof betreuAns.number === "number")) {
-    const hours = (typeof betreuAns.value === "number" ? betreuAns.value : betreuAns.number) || 0;
-    if (hours > 0) {
-      const rateLabel = "Betreuung vor Ort (€/h)";
-      const rate = priceOf(K, rateLabel);
-      const sum = rate * hours;
-      lines.push(`+ Betreuung vor Ort: ${hours} × ${rate} € = ${sum} €`);
-      total += sum;
-    }
-  }
-
 }
+
 
 export default App;
