@@ -1,0 +1,11 @@
+{
+  "brand": "Fobi Fotobox",
+  "assistant_name": "Dennis",
+  "theme": {
+    "bg": "#232321",
+    "text": "#ffffff",
+    "brand": "#ccb63f",
+    "accent": "#ccb63f"
+  },
+  "notes": "Diese Knowledge-Datei ist optional. Die App fällt sauber auf Defaults zurück."
+}
