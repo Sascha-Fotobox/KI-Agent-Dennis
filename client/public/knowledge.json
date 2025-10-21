@@ -257,5 +257,11 @@
       "step": 1,
       "unit": "Stunden"
     }
-  ]
+  ],
+  "theme": {
+    "bg": "#232321",
+    "text": "#ffffff",
+    "brand": "#ccb63f",
+    "accent": "#ccb63f"
+  }
 }

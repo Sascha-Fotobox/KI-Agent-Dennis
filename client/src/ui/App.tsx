@@ -19,6 +19,15 @@ type Message = { role: "assistant" | "user"; text: string };
 const GITHUB_RAW =
   "https://raw.githubusercontent.com/Sascha-Fotobox/KI-Agent-Dennis/main/public/knowledge.json";
 
+const STEP_HEADERS: Record<number, string> = {
+  1: "Digital oder Digital & Print",
+  2: "Veranstaltungsart",
+  3: "Veranstaltungsgröße",
+  4: "Druckformat",
+  5: "Zubehör",
+  6: "Zusammenfassung & Preise"
+};
+
 const App: React.FC = () => {
   const [K, setK] = useState<Knowledge | null>(null);
   const [kError, setKError] = useState<string | null>(null);
@@ -88,6 +97,28 @@ const App: React.FC = () => {
     setSubIndex(0);
     setSelections({ accessories: { requisiten: false, hintergrund: false, layout: false } });
   }, [K]);
+  /* THEME-INJECT-START */
+  useEffect(() => {
+    if (!K) return;
+    const theme = (K as any).theme || {};
+    const r = document.documentElement;
+    const set = (name: string, val?: string) => {
+      if (typeof val === "string" && val.trim()) r.style.setProperty(name, val);
+    };
+    set("--bg", theme.bg);
+    set("--card", theme.card);
+    set("--text", theme.text);
+    set("--muted", theme.muted);
+    set("--brand", theme.brand);
+    set("--accent", theme.accent);
+    set("--btn-bg", theme.buttonBg);
+    set("--btn-text", theme.buttonText);
+    set("--btn-hover", theme.buttonHover);
+    set("--bubble-assistant", theme.bubbleAssistant);
+    set("--bubble-user", theme.bubbleUser);
+  }, [K]);
+  /* THEME-INJECT-END */
+
 
   const onChoice = (choice: string) => {
     addUser(choice);
@@ -253,8 +284,9 @@ const App: React.FC = () => {
           </div>
         ))}
 
+        <div className="rule" />
         <div className="step">
-          {current?.title && <h2>{current.title}</h2>}
+          <h2>{STEP_HEADERS[currentStepId] || current?.title}</h2>
           {current?.ask && <p className="ask">{current.ask}</p>}
 
           {currentStepId === 4 && (
