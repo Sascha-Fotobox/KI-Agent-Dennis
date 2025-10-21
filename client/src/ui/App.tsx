@@ -362,10 +362,12 @@ return (
                   onClick={() => setSel((s) => ({ ...s, format: f, printPackage: null }))}
                 >
                   {f === "Postkarte"
-                    ? "Postkartenformat (10×15 cm)"
-                    : f === "Streifen"
-                    ? "Fotostreifen (5×15 cm)"
-                    : "Großbildformat (15×20 cm)"}
+  ? "Postkartenformat (10×15 cm)"
+  : f === "Streifen"
+  ? "Fotostreifen (5×15 cm)"
+  : f === "Postkarte & Streifen"
+  ? "Postkarten- & Fotostreifenformat"
+  : "Großbildformat (15×20 cm)"}
                 </button>
               ))}
             </div>
