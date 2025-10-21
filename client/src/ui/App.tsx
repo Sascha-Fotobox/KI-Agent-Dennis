@@ -81,7 +81,7 @@ const App: React.FC = () => {
       {
         role: "assistant",
         text:
-          "Hi! Ich begleite dich Schritt für Schritt zur passenden Fotobox. Möchtest du die Fotobox 📱 Digital nutzen oder 🖨️ Digital & Print?",
+          "Moin! Gerne begleite ich dich Schritt für Schritt zur deiner ividuellen Fotobox. \n\nMöchtest du die Fotobox 📱 Digital nutzen oder 🖨️ Digital & Print?",
       },
     ]);
     setCurrentStepId(1);
@@ -98,13 +98,13 @@ const App: React.FC = () => {
       setSelections((p) => ({ ...p, mode }));
       if (mode === "Digital") {
         addBot(
-          "Top! Digital bedeutet unbegrenzt viele Fotos, QR-Downloads und eine DSGVO-konforme Online-Galerie – nachhaltig und flexibel.\n\nLass uns noch kurz dein Zubehör anschauen."
+          "Alles klar! Digital kannst du immer unbegrenzt viele Fotos aufnehmen. Diese kannst du per QR-Download direkt an der Fotobox herunterladen und im Nachgang der Veranstaltung erhälst du eine Online-Galerie – nachhaltig und flexibel.\n\nLass uns nun schauen, welches Zubehör du dir zur Fotobox wünschst. \nÜbrigens: Ein Zubehör ist immer inklusive!"
         );
         setCurrentStepId(5);
         setSubIndex(0);
         return;
       } else {
-        addBot("Alles klar – mit Sofortdruck. Was wird gefeiert?");
+        addBot("Alles klar – mit Sofortdruck soll es sein. \n\n Zur nächsten Frage: \nWas für eine Veranstaltung ist den geplant?");
         setCurrentStepId(2);
         return;
       }
@@ -117,7 +117,7 @@ const App: React.FC = () => {
       const rec = s2?.recommendations?.[choice] || "";
       const bridge =
         s2?.after_reply?.text ||
-        "Klingt gut! Magst du mir sagen, wie viele Gäste ungefähr erwartet werden?";
+        "Klingt gut! \n\nMagst du mir sagen, wie viele Gäste ungefähr erwartet werden? Hieran kann ich dir beim Druck eine Printmenge empfehlen";
       addBot([rec, bridge].filter(Boolean).join("\n\n"));
       setCurrentStepId(3);
       return;
@@ -131,7 +131,7 @@ const App: React.FC = () => {
       const spec = s3?.special_contexts?.[eventKey]?.[choice];
       const rec = spec || s3?.recommendations?.[choice] || "";
       setSelections((p) => ({ ...p, printRecommendation: rec }));
-      addBot([rec, "Als Nächstes: Welches Druckformat wünscht ihr euch?"].join("\n\n"));
+      addBot([rec, "Als Nächstes: \nWelches Druckformat wünschst du dir denn?"].join("\n\n"));
       setCurrentStepId(4);
       return;
     }
@@ -148,7 +148,7 @@ const App: React.FC = () => {
       const rec = s4?.recommendations?.[choice] || "";
       const bridge =
         s4?.after_reply?.text ||
-        "Super, dann berücksichtige ich dieses Format für deine Preisübersicht am Ende. Lass uns jetzt noch kurz dein Zubehör anschauen.";
+        "Super, dann berücksichtige ich dieses Format für deine Preisübersicht am Ende. \n\nLass uns jetzt noch kurz schauen, welches Zubehör du dir wünschst. \nÜbrigens: Ein Zubehör ist immer inklusive!";
       addBot([rec, bridge].filter(Boolean).join("\n\n"));
       setCurrentStepId(5);
       setSubIndex(0);
