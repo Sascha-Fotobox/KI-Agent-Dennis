@@ -53,7 +53,7 @@ button {
 }
 button:hover{ border-color:#9a8c36; }
 button:focus{
-  outline:none; border-color:#ccb63f;
+  outline:none; border-color:#4a4a46;
   box-shadow:0 0 0 2px rgba(204,182,63,.12) inset, 0 0 0 3px rgba(0,0,0,.25);
 }
 button.active { border-color:#ccb63f; background:#2a2a25; }
@@ -90,3 +90,5 @@ button.card .btn-price { margin-top:6px; font-weight:700; }
   background: linear-gradient(90deg, transparent, #3a3a38, transparent);
   margin:8px 0;
 }
+
+button.active:focus{ border-color:#ccb63f; }

@@ -12,7 +12,7 @@ type Knowledge = {
 type Mode = "Digital" | "Digital & Print" | undefined;
 type Format = "Postkarte" | "Streifen" | "Großbild" | undefined;
 type PrintPkg = "100" | "200" | "400" | "800" | "802" | null;
-type AccessoryKey = "Requisiten" | "Hintergrund" | "Layout";
+type AccessoryKey = "Requisiten" | "Hintergrund" | "Layout" | "Gala-Paket" | "Audio-Gästebuch";
 
 type Selections = {
   mode: Mode;
@@ -353,7 +353,7 @@ export default function App() {
           <div className="sectionTitle">Zubehör (Mehrfachauswahl möglich)</div>
           <div className="note">Das zuerst gewählte Zubehör ist inklusive. Jedes weitere kostet 30 €.</div>
           <div className="btnrow wrap threecol">
-            {(["Requisiten", "Hintergrund", "Layout"] as const).map((z) => {
+            {(["Requisiten", "Hintergrund", "Layout", "Gala-Paket", "Audio-Gästebuch"] as const).map((z) => {
               const active = !!sel.accessories[z];
               return (
                 <button key={z} className={active ? "active card" : "card"} onClick={() => toggleAccessory(z)}>
@@ -363,7 +363,11 @@ export default function App() {
                       ? "Themen-Sets & Accessoires"
                       : z === "Hintergrund"
                       ? "Mobiles Hintergrundsystem"
-                      : "Individuelle Druck-/Screen-Layouts"}
+                      : z === "Layout"
+                      ? "Individuelle Druck-/Screen-Layouts"
+                      : z === "Gala-Paket"
+                      ? "Roter Teppich & Personenleitsystem (rote Kordeln)"
+                      : "Audio-Gästebuch – für vertonte Erinnerungen"}
                   </div>
                   <div className="btn-price">{formatCurrency(ACCESSORY_PRICES[z])}</div>
                 </button>
