@@ -259,6 +259,7 @@ export default function App() {
         {showEvent && (
         <div className="bubble a">
           <div className="sectionTitle">Eventtyp</div>
+        )}
           <div className="btnrow wrap">
             {["Hochzeit", "Geburtstag", "Firmenfeier", "Abschlussball", "Gartenparty", "Sonstiges"].map((t) => (
               <button
