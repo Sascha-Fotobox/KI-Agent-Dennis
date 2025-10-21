@@ -33,8 +33,25 @@ const PRINT_PRICES: Record<Exclude<PrintPkg, null>, number> = {
   "200": 100,
   "400": 150,
   "800": 250,
-  "802": 280, // 2 Drucker
+  "802": 280,
 };
+
+const BASE_COUNTS: Record<Exclude<PrintPkg, null>, number> = {
+  "100": 100,
+  "200": 200,
+  "400": 400,
+  "800": 800,
+  "802": 800,
+};
+
+const IS_DUAL: Record<Exclude<PrintPkg, null>, boolean> = {
+  "100": false,
+  "200": false,
+  "400": false,
+  "800": false,
+  "802": true,
+};
+
 
 const ACCESSORY_PRICES: Record<AccessoryKey, number> = {
   Requisiten: 30,
@@ -61,7 +78,7 @@ function formatFactor(format?: Format) {
 }
 
 function effectivePrints(pkg: Exclude<PrintPkg, null>, format?: Format) {
-  const base = pkg === "802" ? 800 : Number(pkg);
+  const base = BASE_COUNTS[pkg];
   return Math.round(base * formatFactor(format));
 }
 
@@ -176,7 +193,7 @@ export default function App() {
     const keys: Exclude<PrintPkg, null>[] = ["100", "200", "400", "800", "802"];
     return keys.map((key) => {
       const count = effectivePrints(key, sel.format);
-      const info = key === "802" ? "2 Drucker" : `≈${key === "802" ? 800 : Number(key)} Basis (Postkarte)`;
+      const info = IS_DUAL[key] ? "2 Drucker" : `≈${BASE_COUNTS[key]} Basis (Postkarte)`;
       return { key, label: `Printpaket ${key}`, sub: `${count} Drucke`, info, price: PRINT_PRICES[key] };
     });
   }, [sel.format]);
@@ -292,7 +309,7 @@ export default function App() {
               {(["100", "200", "400", "800", "802"] as const).map((key) => {
                 const active = sel.printPackage === key;
                 const count = effectivePrints(key, sel.format);
-                const info = key === "802" ? "2 Drucker" : `≈${key === "802" ? 800 : Number(key)} Basis (Postkarte)`;
+                const info = IS_DUAL[key] ? "2 Drucker" : `≈${BASE_COUNTS[key]} Basis (Postkarte)`;
                 return (
                   <button
                     key={key}
