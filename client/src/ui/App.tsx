@@ -130,10 +130,19 @@ function useKnowledge() {
 
 /** Zubehörkosten (erstes gewähltes Zubehör gratis) */
 function calcAccessoryCost(sel: Selections) {
-  const chosen = sel.accessoryOrder.filter((k) => sel.accessories[k]);
-  if (chosen.length === 0) return 0;
-  const freeKey = chosen[0];
-  return chosen.reduce((sum, key) => sum + (key === freeKey ? 0 : ACCESSORY_PRICES[key]), 0);
+  const includedSet = new Set<AccessoryKey>(["Requisiten", "Hintergrund", "Layout"]);
+  const chosenOrder = sel.accessoryOrder.filter((k) => sel.accessories[k]);
+  const firstIncluded = chosenOrder.find((k) => includedSet.has(k));
+  let sum = 0;
+  for (const key of chosenOrder) {
+    const isIncludedType = includedSet.has(key as AccessoryKey);
+    const price = ACCESSORY_PRICES[key as AccessoryKey];
+    if (isIncludedType && key === firstIncluded) {
+      continue; // first included item is free
+    }
+    sum += price;
+  }
+  return sum;
 }
 
 /** ---------- Hauptkomponente ---------- */
@@ -216,7 +225,19 @@ export default function App() {
 
   /** Zubehör-Linien für Summe */
   const accessoriesLines = useMemo(() => {
-    const chosen = sel.accessoryOrder.filter((k) => sel.accessories[k]);
+    const includedSet = new Set<AccessoryKey>(["Requisiten", "Hintergrund", "Layout"]);
+    const chosen = sel.accessoryOrder.filter((k) => sel.accessories[k as AccessoryKey]);
+    const firstIncluded = chosen.find((k) => includedSet.has(k as AccessoryKey));
+    return chosen.map((key) => {
+      const isIncludedType = includedSet.has(key as AccessoryKey);
+      const isFree = isIncludedType && key === firstIncluded;
+      return {
+        key,
+        price: isFree ? 0 : ACCESSORY_PRICES[key as AccessoryKey],
+        isFree,
+      };
+    });
+  }, [sel]);
     if (chosen.length === 0) return [];
     const freeKey = chosen[0];
     return chosen.map((key) => ({
@@ -247,7 +268,10 @@ export default function App() {
       <main className="chat">
 {/* 1) Modus */}
         <div className="bubble a">
-          <p>Moin! Ich begleite dich Schritt für Schritt zu deiner individuellen Fotobox.</p>
+          <p><strong>Moin!</strong></p>
+          <p>Ich bin Dennis, der KI-Assistent von Fobi Fotobox!<br/>Gerne berate ich dich bei der Wahl deiner Fotobox und führe dich Schritt für Schritt durch.</p>
+          <p>Die Basis bildet die Fotobox mit dem <strong>Grundpaket &amp; Service</strong>. Dieses beinhaltet folgende Punkte:</p>
+
           <div className="note" style={{ marginTop: 8 }}>
             <div style={{ fontWeight: 700, marginBottom: 6 }}>Grundpaket – das ist immer inklusive:</div>
             <ul style={{ margin: 0, paddingLeft: 18 }}>
@@ -273,6 +297,16 @@ export default function App() {
               <li>24/7 Support</li>
               <li>Lieferung / Aufbau / Abbau <span style={{ whiteSpace: "nowrap" }}>(20&nbsp;km inkl., 80&nbsp;km möglich)</span></li>
             </ul>
+            <div style={{ fontWeight: 700, margin: "10px 0 6px" }}>Zubehörpaket</div>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              <li>
+                Ein kleines Zubehörpaket <span style={{ whiteSpace: "nowrap" }}>(Requisiten, Hintergrundsystem oder individuelle Layoutgestaltung)</span> ist ebenfalls inklusive.
+              </li>
+            </ul>
+            <p className="hint" style={{ marginTop: 4 }}>
+              Hinweis: Auswahl erfolgt bei den Zubehörpaketen.
+            </p>
+
           </div>
           <p style={{ marginTop: 10 }}>Als erstes kannst du wählen: Möchtest du eine <strong>rein digitale Fotobox</strong> oder eine <strong>digitale Fotobox mit Sofortdruckfunktion</strong>?</p>
 
@@ -328,9 +362,6 @@ export default function App() {
           <div className="bubble a focus">
             <div className="sectionTitle">Druckformat</div>
             <p>Welches Druckformat wünschst du dir?</p>
-            <div className="note">
-              Abrechnung basiert auf dem Postkartenformat. Fotostreifen = 2× Postkarte, Großbild = 0,5× Postkarte.
-            </div>
             <div className="btnrow wrap">
               {(["Postkarte", "Streifen", "Großbild"] as const).map((f) => (
                 <button
@@ -378,7 +409,7 @@ export default function App() {
         {showAccessories && (
         <div className="bubble a">
           <div className="sectionTitle">Zubehör (Mehrfachauswahl möglich)</div>
-          <div className="note">Das zuerst gewählte Zubehör ist inklusive. Jedes weitere kostet 30 €.</div>
+          <p className="hint">Hinweis: Ein kleines Zubehörset (Requisiten, Hintergrund oder Layoutgestaltung) ist inklusive und wird in der Berechnung automatisch berücksichtigt.</p>
           <div className="btnrow wrap threecol">
             {(["Requisiten", "Hintergrund", "Layout", "Gala-Paket", "Audio-Gästebuch"] as const).map((z) => {
               const active = !!sel.accessories[z];

@@ -92,3 +92,7 @@ button.card .btn-price { margin-top:6px; font-weight:700; }
 }
 
 button.active:focus{ border-color:#ccb63f; }
+
+
+/* dezenter Hinweistext */
+.hint{ font-size:13px; color:#bdbdb4; margin:6px 0 10px; }
