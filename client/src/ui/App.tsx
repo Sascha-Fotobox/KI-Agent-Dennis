@@ -57,6 +57,8 @@ const ACCESSORY_PRICES: Record<AccessoryKey, number> = {
   Requisiten: 30,
   Hintergrund: 30,
   Layout: 30,
+  "Gala-Paket": 80,
+  "Audio-Gästebuch": 90,
 };
 
 /** ---------- Helpers ---------- */
