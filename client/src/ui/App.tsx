@@ -549,6 +549,42 @@ return (
       </main>
     </div>
   );
+
+
+function handleDownloadPdf() {
+  const doc = makePdf(sel, total);
+  const fname = "Angebot-Fobi-Fotobox.pdf";
+  doc.save(fname);
+}
+
+function handleEmail() {
+  const subject = encodeURIComponent("Anfrage / Angebot – Fobi Fotobox");
+  const body = encodeURIComponent(buildEmailBody(sel, total));
+  const to = "info@fobi-fotobox.com";
+  window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+}
+
+async function handleShareWhatsapp() {
+  const doc = makePdf(sel, total);
+  const pdfBlob = doc.output("blob");
+  const file = new File([pdfBlob], "Angebot-Fobi-Fotobox.pdf", { type: "application/pdf" });
+  const text =
+    `Hallo Fobi Fotobox,\n` +
+    `hier ist meine Konfiguration.\n\n` +
+    `${buildEmailBody(sel, total)}\n\n` +
+    `Ich würde gern den Termin buchen.`;
+  // @ts-ignore
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      // @ts-ignore
+      await navigator.share({ files: [file], text, title: "Angebot Fobi Fotobox" });
+      return;
+    } catch (e) {}
+  }
+  const waText = encodeURIComponent(text);
+  window.open(`https://wa.me/?text=${waText}`, "_blank");
+}
+
 }
 
 <div className="bubble a" style={{ marginTop: 12 }}>
