@@ -22,6 +22,11 @@ type Format = "Postkarte" | "Streifen" | "Großbild" | "Kombiniert" | undefined;
 type PrintPkg = "100" | "200" | "400" | "800" | "802" | null;
 type AccessoryKey = "Requisiten" | "Hintergrund" | "Layout" | "Gala-Paket" | "Audio-Gästebuch";
 
+const MODES = ["Digital","Digital & Print"] as const;
+const EVENTS = ["Hochzeit","Geburtstag","Interne Firmenfeier","Kunden-Event","Abschlussball","Öffentliches Event","Sonstiges"] as const;
+const GUEST_RANGES = ["0–30","30–50","50–120","120–250","ab 250"] as const;
+const FORMATS = ["Postkarte","Streifen","Großbild","Kombiniert"] as const;
+
 const BASE_PRICE = 350;
 
 const PRINT_PRICES: Record<Exclude<PrintPkg, null>, number> = {
@@ -88,7 +93,7 @@ export default function App() {
 
   function resetForMode(next: Mode) {
     if (next === "Digital") {
-      setSel((s) => ({
+      setSel((s): Selections => ({
         ...s,
         mode: next,
         guests: undefined,
@@ -96,12 +101,12 @@ export default function App() {
         printPackage: null,
       }));
     } else {
-      setSel((s) => ({ ...s, mode: next }));
+      setSel((s): Selections => ({ ...s, mode: next }));
     }
   }
 
   function toggleAccessory(k: AccessoryKey) {
-    setSel((s) => {
+    setSel((s): Selections => {
       const nextVal = !s.accessories[k];
       const nextAcc = { ...s.accessories, [k]: nextVal };
       let order = s.accessoryOrder.filter((x) => x !== k);
@@ -202,11 +207,11 @@ export default function App() {
             Als erstes kannst du wählen: Möchtest du eine <strong>rein digitale Fotobox</strong> oder eine <strong>digitale Fotobox mit Sofortdruckfunktion</strong>?
           </p>
           <div className="btnrow">
-            {(["Digital", "Digital & Print"] as const).map((m) => (
+            {MODES.map((m) => (
               <button
                 key={m}
                 className={sel.mode === m ? "active" : ""}
-                onClick={() => resetForMode(m)}
+                onClick={() => resetForMode(m as Mode)}
               >
                 {m}
               </button>
@@ -219,8 +224,8 @@ export default function App() {
           <div className="bubble a">
             <div className="sectionTitle">Event</div>
             <div className="btnrow wrap">
-              {["Hochzeit","Geburtstag","Interne Firmenfeier","Kunden-Event","Abschlussball","Öffentliches Event","Sonstiges"].map((t) => (
-                <button key={t} className={sel.eventType === t ? "active" : ""} onClick={() => setSel((s)=>({...s, eventType:t}))}>
+              {EVENTS.map((t) => (
+                <button key={t} className={sel.eventType === t ? "active" : ""} onClick={() => setSel((s): Selections => ({...s, eventType: t as EventType}))}>
                   {t}
                 </button>
               ))}
@@ -233,8 +238,8 @@ export default function App() {
           <div className="bubble a">
             <div className="sectionTitle">Gäste</div>
             <div className="btnrow wrap">
-              {["0–30","30–50","50–120","120–250","ab 250"].map((g) => (
-                <button key={g} className={sel.guests === g ? "active" : ""} onClick={() => setSel((s)=>({...s, guests:g}))}>
+              {GUEST_RANGES.map((g) => (
+                <button key={g} className={sel.guests === g ? "active" : ""} onClick={() => setSel((s): Selections => ({...s, guests: g as Guests}))}>
                   {g}
                 </button>
               ))}
@@ -247,11 +252,11 @@ export default function App() {
           <div className="bubble a">
             <div className="sectionTitle">Druckformat</div>
             <div className="btnrow wrap">
-              {(["Postkarte","Streifen","Großbild","Kombiniert"] as const).map((f) => (
+              {FORMATS.map((f) => (
                 <button
                   key={f}
                   className={sel.format === f ? "active" : ""}
-                  onClick={() => setSel((s)=>({...s, format:f, printPackage:null}))}
+                  onClick={() => setSel((s): Selections => ({...s, format: f as Format, printPackage: null}))}
                 >
                   {f === "Postkarte"
                     ? "Postkartenformat (10×15 cm)"
@@ -278,7 +283,7 @@ export default function App() {
                   <button
                     key={key}
                     className={sel.printPackage === key ? "active card" : "card"}
-                    onClick={() => setSel((s)=>({...s, printPackage:key}))}
+                    onClick={() => setSel((s): Selections => ({...s, printPackage: key}))}
                   >
                     <div className="btn-title">{labelTop}</div>
                     <div className="btn-sub">{`(Printpaket ${key})`}</div>
