@@ -24,7 +24,7 @@ Mit dem Start erklärst du dich damit einverstanden, dass deine Angaben ausschli
           "Ausstattung:",
           "→ Spiegelreflexkamera",
           "→ Studioblitz/Beleuchtung",
-          "→ Touchscreen 15\",
+          "→ Touchscreen 15 Zoll,
           "Digitale Fotoflat",
           "Videovorschau (du siehst dich selbst)",
           "Fun‑Filter (SW, Sepia, …)",
