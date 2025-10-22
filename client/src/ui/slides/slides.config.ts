@@ -56,7 +56,16 @@ Mit dem Start erklärst du dich damit einverstanden, dass deine Angaben ausschli
     kind: "general",
     title: "Allgemeine Angaben",
     description: "Was plant ihr – und mit wie vielen Gästen?",
-    eventOptions: ["Hochzeit","Geburtstag","Abschlussball","Internes Firmenevent","Messe","Kundenevent","Öffentliches Event","Sonstiges"],
+    eventOptions: [
+  "Hochzeit",
+  "Geburtstag",
+  "Abschlussball",
+  "Internes Firmenevent",
+  "Messe",
+  "Kundenevent",
+  "Öffentliches Event",
+  "Sonstiges"
+],
     guestOptions: ["bis 30","30–50","50–120","120–250","ab 250"],
     audioSrc: "/audio/slide-general.mp3"
   },
