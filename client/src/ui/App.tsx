@@ -65,6 +65,11 @@ export default function App() {
           <div>
             <div className="brandName">{brand}</div>
             <div className="hint">Dein digitaler Berater – Dennis</div>
+            {k?.disclaimer && (
+              <div className="note" style={{ marginTop: 6 }}>
+                {k.disclaimer}
+              </div>
+            )}
           </div>
         </div>
       </header>
