@@ -12,25 +12,46 @@ Bitte gib hier keine persönlichen Daten ein, wie vollständige Namen, Telefonnu
 Mit dem Start erklärst du dich damit einverstanden, dass deine Angaben ausschließlich zur Beratung und Preisfindung verarbeitet werden.`,
     options: ["Ich stimme den Datenschutzbedingungen zu und starte die Beratung"]
   },
-  {
-    id: "welcome",
-    kind: "info",
-    title: "Willkommen – unser Grundpaket",
-    sections: [
-      {
-        title: "Fotobox",
-        items: [
-          "Ausstattung:",
-          "→ Spiegelreflexkamera",
-          "→ Studioblitz/Beleuchtung",
-          "→ Touchscreen 15 Zoll",
-          "Digitale Fotoflat",
-          "Videovorschau (du siehst dich selbst)",
-          "Fun‑Filter (SW, Sepia, …)",
-          "GIF‑Videos & Boomerang‑Videos",
-          "Bilderversand an der Fotobox (QR‑Code)"
-        ]
-      },
+  
+{
+  id: "welcome",
+  kind: "info",
+  title: "Willkommen – unser Grundpaket",
+  sections: [
+    {
+      title: "Fotobox",
+      items: [
+        "Ausstattung:",
+        "→ Spiegelreflexkamera",
+        "→ Studioblitz/Beleuchtung",
+        "→ Touchscreen 15 Zoll",
+        "Digitale Fotoflat",
+        "Videovorschau (du siehst dich selbst)",
+        "Fun‑Filter (SW, Sepia, …)",
+        "GIF‑Videos & Boomerang‑Videos",
+        "Bilderversand an der Fotobox (QR‑Code)"
+      ]
+    },
+    {
+      title: "Service",
+      items: [
+        "Alle Fotos/Videos mit Overlay",
+        "Online‑Galerie (mit Passwort)",
+        "Vorabgespräch per Telefon oder Videomeeting",
+        "24/7 Support",
+        "Lieferung/Aufbau/Abbau (20 km inkl., 80 km möglich)"
+      ]
+    },
+    {
+      title: "Zubehörpaket",
+      items: [
+        "Ein kleines Zubehörpaket ist inklusive: Requisiten, Hintergrundsystem oder individuelle Layout‑Gestaltung (Auswahl beim Zubehör)."
+      ]
+    }
+  ],
+  audioSrc: "/audio/slide-welcome.mp3"
+},
+
   {
     id: "general",
     kind: "general",
