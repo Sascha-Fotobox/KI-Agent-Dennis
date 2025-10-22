@@ -76,6 +76,13 @@ Mit dem Start erklärst du dich damit einverstanden, dass deine Angaben ausschli
     options: ["Digital", "Digital & Print"]
   },
   {
+    id: "tipsprint",
+    kind: "tipsprint",
+    title: "Empfehlungen zu Druck & Gästeanzahl",
+    description: "Passend zu eurer Gästezahl – Hinweise für die richtige Druckmenge.",
+    audioSrc: "/audio/slide-tipsprint.mp3"
+  },
+  {
     id: "format",
     kind: "format",
     title: "Druckformat",

@@ -27,6 +27,7 @@ export default function App() {
   const themeBg = k?.theme?.bg ?? "#1e1e1c";
   const themeText = k?.theme?.text ?? "#ffffff";
   const [appSel, setAppSel] = useState<Selections>({ accessories: [] });
+  const [showSummary, setShowSummary] = useState<boolean>(false);
 
   return (
     <div className="app" style={{ background: themeBg, color: themeText }}>
@@ -45,10 +46,10 @@ export default function App() {
 
       <main className="chat">
         <div className="bubble a">
-          <SlideEngine slides={slides} onFinish={() => console.log("Slides fertig")} onChange={setAppSel} />
+          <SlideEngine slides={slides} onFinish={() => console.log("Slides fertig")} onChange={setAppSel} onShowSummary={setShowSummary} />
         </div>
 
-        <div className="bubble sum">
+        <div className="bubble sum" style={{ display: showSummary ? "block" : "none" }}>
           <div className="sectionTitle">Zusammenfassung (live)</div>
           <div className="sumrow"><span>Modus</span><b>{appSel.mode ?? "–"}</b></div>
           <div className="sumrow"><span>Event</span><b>{appSel.event ?? "–"}</b></div>
