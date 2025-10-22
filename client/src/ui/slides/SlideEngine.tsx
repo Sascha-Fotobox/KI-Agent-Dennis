@@ -302,9 +302,10 @@ Beim Einsatz von zwei Drucksystemen und einer betreuten Fotobox kann die Druckze
             <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 6, textAlign: "center" }}>Erklärung anhören</div>
             <div className="audioInlineRow">
               <button type="button" className="audioBtn" onClick={() => {
-                if (!audioRef.current) return; if (audioRef.current.paused) audioRef.current.play(); else audioRef.current.pause();
+                if (!audioRef.current) return;
+                if (audioRef.current.paused) audioRef.current.play(); else audioRef.current.pause();
               }}>{isPlaying ? "❚❚ Pause" : "► Abspielen"}</button>
-              <audio ref={audioRef} src={current.audioSrc} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
+              <audio ref={audioRef} src={current.audioSrc || undefined} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
             </div>
           </div>
         )}
@@ -313,7 +314,21 @@ Beim Einsatz von zwei Drucksystemen und einer betreuten Fotobox kann die Druckze
           <div className="navrow">
             <button onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={!canPrev}>Zurück</button>
             <span className="chip">{displayIndex} von {displayTotal}</span>
-            <button onClick={() => { if (index < slides.length - 1) setIndex(i => nextIndex(i)); else onFinish && onFinish(); }} disabled={!canNext}>{index < slides.length - 1 ? "Weiter" : "Fertig"}</button>
+            <button onClick={() => {
+              const wantsPrint = sel.mode === "Digital & Print" || sel.mode === "Print" || sel.mode === "Fotobox mit Sofortdruck";
+              const nextIndex = (() => {
+                let j = index + 1;
+                while (j < slides.length) {
+                  const k = slides[j]?.kind;
+                  const shouldSkip = !wantsPrint && (k === "tipsprint" || k === "format" || k === "printpkgs");
+                  if (!shouldSkip) break;
+                  j++;
+                }
+                return j;
+              })();
+              if (nextIndex < slides.length) setIndex(nextIndex);
+              else onFinish?.();
+            }} className="next">{index < slides.length - 1 ? "Weiter" : "Fertig"}</button>
           </div>
         ) : null}
       </div>
