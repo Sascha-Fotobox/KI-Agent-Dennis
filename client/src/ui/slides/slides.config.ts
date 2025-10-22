@@ -7,10 +7,18 @@ export const slides: Slide[] = [
     title: "Moin! 👋 Willkommen bei Fobi Fotobox",
     description: "Ich bin Dennis, dein Berater. Hier ist unser Grundpaket – so wie du es aus der Chat-Version kennst:",
     bullets: [
-      "Fotobox mit Spiegelreflexkamera, Studioblitz/Beleuchtung, 15\" Touchscreen",
-      "Auf- & Abbau inklusive",
-      "Online-Galerie mit Download",
-      "Service & Support am Eventtag (gemäß deiner Liste)"
+      "Ausstattung: Spiegelreflexkamera, Studioblitz/Beleuchtung, Touchscreen 15\"",
+      "Digitale Fotoflat",
+      "Videovorschau (du siehst dich selbst)",
+      "Fun‑Filter (SW, Sepia, …)",
+      "GIF‑Videos & Boomerang‑Videos",
+      "Bilderversand an der Fotobox (QR‑Code)",
+      "Service: Alle Fotos/Videos mit Overlay",
+      "Service: Online‑Galerie (mit Passwort)",
+      "Service: Vorabgespräch per Telefon oder Videomeeting",
+      "Service: 24/7 Support",
+      "Service: Lieferung/Aufbau/Abbau (20 km inkl., 80 km möglich)",
+      "Zubehörpaket: kleines Paket inkl. (für individuelle Layout‑Gestaltung)"
     ],
     audioSrc: "/audio/slide-welcome.mp3",
   },
