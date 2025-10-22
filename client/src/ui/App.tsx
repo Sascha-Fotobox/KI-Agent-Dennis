@@ -58,7 +58,12 @@ export default function App() {
           <div className="brandName">{brand}</div>
           <div className="hint">Dein digitaler Berater – Dennis</div>
         </div>
-        </div>}
+        <div className="hint" style={{ textAlign: "right" }}>
+          <div>Sascha Krause</div>
+          <div>📞 0174 7 6964756</div>
+          <div>✉️ info@fobi-fotobox.com</div>
+          <div>🌐 www.fobi-fotobox.com</div>
+        </div>
       </header>
 
       <main className="chat">
@@ -123,7 +128,10 @@ export default function App() {
                   const isIncluded = a === includedSmall;
                   const price = isIncluded ? 0 : (ACCESSORY_PRICE_MAP[a] ?? 0);
                   return (
-                    <div key={a} className="sumrow"><span>{a}</span><b>{isIncluded ? "inkl." : price.toFixed(2) + " €"}</b></div>
+                    <div key={a} className="sumrow">
+                      <span>{a}</span>
+                      <b>{isIncluded ? "inkl." : price.toFixed(2) + " €"}</b>
+                    </div>
                   );
                 })
               : null;
