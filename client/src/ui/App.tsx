@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import SlideEngine, { computePrice, type Selections } from "./slides/SlideEngine";
+
+// Typed maps for summary rendering
+const PRINT_PRICE_MAP: Record<string, number> = { "100": 70, "200": 100, "400": 150, "800": 250, "802": 280 };
+const ACCESSORY_PRICE_MAP: Record<string, number> = {
+  "Requisiten": 30,
+  "Hintergrund": 30,
+  "Layout": 30,
+  "Gala-Paket": 80,
+  "Audio-Gästebuch": 90,
+};
+
 import { slides } from "./slides/slides.config";
 
 type Knowledge = {
@@ -98,12 +109,12 @@ export default function App() {
           <div className="sumrow"><span>Grundpaket</span><b>{(350).toFixed(2)} €</b></div>
           {appSel.mode === "Digital & Print" && (
             <>
-              <div className="sumrow"><span>Druckpaket</span><b>{appSel.printpkg ? ( {"100":70, "200":100, "400":150, "800":250, "802":280}[appSel.printpkg as keyof any] ).toFixed(2) + " €" : "–"}</b></div>
+              <div className="sumrow"><span>Druckpaket</span><b>{ appSel.printpkg ? (PRINT_PRICE_MAP[appSel.printpkg] ?? 0).toFixed(2) + " €" : "–" }</b></div>
               <div className="sumrow"><span>Format-Extra</span><b>{appSel.format === "Postkarte & Streifen" ? (20).toFixed(2) + " €" : "0,00 €"}</b></div>
             </>
           )}
           {appSel.accessories?.length ? appSel.accessories.map(a => (
-            <div key={a} className="sumrow"><span>{a}</span><b>{({"Requisiten":30,"Hintergrund":30,"Layout":30,"Gala-Paket":80,"Audio-Gästebuch":90}[a]||0).toFixed(2)} €</b></div>
+            <div key={a} className="sumrow"><span>{a}</span><b>{ (ACCESSORY_PRICE_MAP[a] ?? 0).toFixed(2) } €</b></div>
           )) : null}
           <div className="sumrow" style={{ marginTop: 8 }}>
             <span><b>Gesamt</b></span><b>{computePrice(appSel).toFixed(2)} €</b>
