@@ -1,8 +1,7 @@
 
 import type { Slide } from "./SlideEngine";
 
-export const slides: Slide[] = [
-  {
+export const slides: Slide[] = [{
     id: "privacy",
     kind: "consent",
     title: "Moin! Ich bin dein Fotobox-Berater von Fobi Fotobox.",
