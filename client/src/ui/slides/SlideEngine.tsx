@@ -26,7 +26,7 @@ export type Slide = {
   multi?: boolean;         // allow multiple selections (e.g., accessories)
 };
 
-type Selections = {
+export type Selections = {
   mode?: "Digital" | "Digital & Print";
   event?: string;
   guests?: string;
@@ -38,9 +38,10 @@ type Selections = {
 type Props = {
   slides: Slide[];
   onFinish?: () => void;
+  onChange?: (s: Selections) => void;
 };
 
-function computePrice(sel: any) {
+export function computePrice(sel: Selections) {
   let total = BASE_PRICE;
   if (sel.mode === 'Digital & Print' && sel.printpkg) {
     total += PRINT_PRICES[sel.printpkg as keyof typeof PRINT_PRICES] || 0;
@@ -64,7 +65,10 @@ export default function SlideEngine({ slides, onFinish }: Props) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-  }, [index]);
+  }, [index]
+
+  useEffect(() => { onChange?.(sel); }, [sel, onChange]);
+);
 
   function chooseSingle(value: string) {
     switch (current.kind) {
@@ -108,7 +112,7 @@ export default function SlideEngine({ slides, onFinish }: Props) {
   const canNext = index < slides.length - 1 && (!needsChoice || hasChoice);
 
   return (
-    <div style={{height: 520, maxWidth: 880, overflowY: "auto"}}>
+    <div className="slideBox">
       <div className="sectionTitle">{current.title}</div>
       {current.description && <p className="hint">{current.description}</p>}
 

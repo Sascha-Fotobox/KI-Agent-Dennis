@@ -3,7 +3,7 @@
 html, body { margin:0; padding:0; }
 body { background:#1e1e1c; color:#fff; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
 
-.app { max-width: 1000px; margin: 0 auto; }
+.app { max-width: 1280px; margin: 0 auto; }
 
 .topbar {
   position: sticky; top:0; z-index:10;
@@ -96,3 +96,13 @@ button.active:focus{ border-color:#ccb63f; }
 
 /* dezenter Hinweistext */
 .hint{ font-size:13px; color:#bdbdb4; margin:6px 0 10px; }
+
+
+/* Fixed-size slide container (no inner scrollbar) */
+.slideBox { min-height: 600px; }
+@media (max-width: 900px) {
+  .slideBox { min-height: 560px; }
+}
+@media (max-width: 600px) {
+  .slideBox { min-height: 520px; }
+}
