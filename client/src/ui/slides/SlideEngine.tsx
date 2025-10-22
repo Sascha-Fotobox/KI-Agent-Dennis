@@ -54,7 +54,7 @@ export function computePrice(sel: Selections) {
   return total;
 }
 
-export default function SlideEngine({ slides, onFinish }: Props) {
+export default function SlideEngine({ slides, onFinish, onChange }: Props) {
   const [index, setIndex] = useState(0);
   const [sel, setSel] = useState<Selections>({ accessories: [] });
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -65,10 +65,9 @@ export default function SlideEngine({ slides, onFinish }: Props) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-  }, [index]
+  }, [index]);
 
   useEffect(() => { onChange?.(sel); }, [sel, onChange]);
-);
 
   function chooseSingle(value: string) {
     switch (current.kind) {
