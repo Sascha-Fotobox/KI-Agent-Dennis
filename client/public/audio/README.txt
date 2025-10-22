@@ -1,1 +1,1 @@
-Lege hier deine MP3-Dateien für die Slides ab (z.B. slide-welcome.mp3).
+Lege hier deine MP3-Dateien ab und verlinke sie in slides.config.ts.

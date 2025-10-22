@@ -1,19 +1,5 @@
+
 import React, { useEffect, useRef, useState } from "react";
-
-// Pricing constants mirrored from original chat app
-const BASE_PRICE = 350;
-const PRINT_PRICES: Record<"100"|"200"|"400"|"800"|"802", number> = {
-  "100": 70, "200": 100, "400": 150, "800": 250, "802": 280
-};
-const SECOND_LAYOUT_FEE = 20; // Postkarte & Streifen
-const ACCESSORY_PRICES: Record<string, number> = {
-  "Requisiten": 30,
-  "Hintergrund": 30,
-  "Layout": 30,
-  "Gala-Paket": 80,
-  "Audio-Gästebuch": 90,
-};
-
 
 export type Slide = {
   id: string;
@@ -22,8 +8,8 @@ export type Slide = {
   bullets?: string[];
   audioSrc?: string;
   kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info";
-  options?: string[];      // for slides with selectable options
-  multi?: boolean;         // allow multiple selections (e.g., accessories)
+  options?: string[];
+  multi?: boolean;
 };
 
 export type Selections = {
@@ -41,16 +27,43 @@ type Props = {
   onChange?: (s: Selections) => void;
 };
 
+// Pricing constants
+const BASE_PRICE = 350;
+const PRINT_PRICES: Record<string, number> = { "100": 70, "200": 100, "400": 150, "800": 250, "802": 280 };
+const SECOND_LAYOUT_FEE = 20;
+const ACCESSORY_PRICES: Record<string, number> = {"Requisiten":30,"Hintergrund":30,"Layout":30,"Gala-Paket":80,"Audio-Gästebuch":90};
+const SMALL_ZUO: ReadonlyArray<string> = ["Requisiten","Hintergrund","Layout"];
+
+// pick which small accessory is included (one of SMALL_ZUO) if chosen
+export function pickIncludedSmall(sel: Selections): string | null {
+  if (!Array.isArray(sel.accessories)) return null;
+  for (const name of SMALL_ZUO) {
+    if (sel.accessories.includes(name)) return name;
+  }
+  return null;
+}
+
+function getPrintPrice(sel: Selections): number {
+  if (sel.mode !== "Digital & Print" || !sel.printpkg) return 0;
+  const raw = parseInt(sel.printpkg, 10);
+  if (!Number.isFinite(raw)) return 0;
+  const effective = sel.format === "Streifen" ? Math.round(raw/2) : raw;
+  return PRINT_PRICES[String(effective)] ?? 0;
+}
+
 export function computePrice(sel: Selections) {
   let total = BASE_PRICE;
-  if (sel.mode === 'Digital & Print' && sel.printpkg) {
-    total += PRINT_PRICES[sel.printpkg as keyof typeof PRINT_PRICES] || 0;
-    if (sel.format === 'Postkarte & Streifen') total += SECOND_LAYOUT_FEE;
-  }
-  // Accessories sum
+  total += getPrintPrice(sel);
+  if (sel.mode === "Digital & Print" && sel.format === "Postkarte & Streifen") total += SECOND_LAYOUT_FEE;
+
+  let accessoriesTotal = 0;
   if (Array.isArray(sel.accessories)) {
-    for (const a of sel.accessories) total += (ACCESSORY_PRICES[a] || 0);
+    for (const a of sel.accessories) accessoriesTotal += (ACCESSORY_PRICES[a] || 0);
   }
+  const included = pickIncludedSmall(sel);
+  if (included) accessoriesTotal = Math.max(0, accessoriesTotal - 30);
+
+  total += accessoriesTotal;
   return total;
 }
 
@@ -61,43 +74,11 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
   const current = slides[index];
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
   }, [index]);
 
   useEffect(() => { onChange?.(sel); }, [sel, onChange]);
 
-  function chooseSingle(value: string) {
-    switch (current.kind) {
-      case "mode":
-        setSel((s) => ({ ...s, mode: value as Selections["mode"] }));
-        break;
-      case "event":
-        setSel((s) => ({ ...s, event: value }));
-        break;
-      case "guests":
-        setSel((s) => ({ ...s, guests: value }));
-        break;
-      case "format":
-        setSel((s) => ({ ...s, format: value }));
-        break;
-      case "printpkgs":
-        setSel((s) => ({ ...s, printpkg: value }));
-        break;
-    }
-  }
-
-  function toggleMulti(value: string) {
-    setSel((s) => {
-      const has = s.accessories.includes(value);
-      const next = has ? s.accessories.filter((x) => x !== value) : [...s.accessories, value];
-      return { ...s, accessories: next };
-    });
-  }
-
-  // Validation: require a selection before moving on for specific slides
   const needsChoice = ["mode", "event", "guests", "format", "printpkgs"].includes(current.kind || "");
   const hasChoice =
     current.kind === "mode" ? !!sel.mode :
@@ -108,29 +89,42 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
     true;
 
   const canPrev = index > 0;
-  const canNext = index < slides.length - 1 && (!needsChoice || hasChoice);
+  function nextIndex(i: number): number {
+    let n = Math.min(slides.length - 1, i + 1);
+    while (slides[n]?.kind === "printpkgs" && sel.mode === "Digital") {
+      n = Math.min(slides.length - 1, n + 1);
+    }
+    return n;
+  }
+  const canNext = (index < slides.length - 1) && (!needsChoice || hasChoice);
+
+  function chooseSingle(value: string) {
+    switch (current.kind) {
+      case "mode": setSel(s => ({ ...s, mode: value as Selections["mode"] })); break;
+      case "event": setSel(s => ({ ...s, event: value })); break;
+      case "guests": setSel(s => ({ ...s, guests: value })); break;
+      case "format": setSel(s => ({ ...s, format: value })); break;
+      case "printpkgs": setSel(s => ({ ...s, printpkg: value })); break;
+    }
+  }
+  function toggleMulti(value: string) {
+    setSel(s => {
+      const has = s.accessories.includes(value);
+      return { ...s, accessories: has ? s.accessories.filter(x => x !== value) : [...s.accessories, value] };
+    });
+  }
 
   return (
     <div className="slideBox">
       <div className="sectionTitle">{current.title}</div>
       {current.description && <p className="hint">{current.description}</p>}
 
-      {/* bullets list (info content) */}
       {current.bullets && current.bullets.length > 0 && (
         <ul style={{ marginTop: 8, paddingLeft: 18 }}>
           {current.bullets.map((b, i) => <li key={i}>{b}</li>)}
         </ul>
       )}
 
-      {/* audio */}
-      {current.audioSrc && (
-        <div style={{ marginTop: 12 }}>
-          <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 6 }}>Erklärung anhören</div>
-          <audio ref={audioRef} controls src={current.audioSrc} style={{ width: "100%" }} />
-        </div>
-      )}
-
-      {/* interactive options */}
       {current.options && current.options.length > 0 && (
         <div className="btnrow wrap" style={{ marginTop: 12 }}>
           {current.options.map((opt) => {
@@ -140,73 +134,39 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
               current.kind === "guests" ? sel.guests === opt :
               current.kind === "format" ? sel.format === opt :
               current.kind === "printpkgs" ? sel.printpkg === opt :
-              current.kind === "accessories" ? sel.accessories.includes(opt) :
-              false;
+              current.kind === "accessories" ? sel.accessories.includes(opt) : false;
             return (
               <button
                 key={opt}
-                className={active ? "active card" : "card"}
+                className={active ? "active" : ""}
                 onClick={() => {
                   if (current.kind === "accessories" || current.multi) toggleMulti(opt);
                   else chooseSingle(opt);
                 }}
               >
-                <div className="btn-title">{opt}</div>
+                {opt}
               </button>
             );
           })}
         </div>
       )}
 
-      {/* navigation */}
+      {current.audioSrc && (
+        <div style={{ marginTop: 12 }}>
+          <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 6 }}>Erklärung anhören</div>
+          <audio ref={audioRef} controls src={current.audioSrc} style={{ width: "100%" }} />
+        </div>
+      )}
+
       <div className="btnrow" style={{ marginTop: 16, alignItems: "center" }}>
-        <button onClick={() => setIndex((i) => Math.max(0, i - 1))} disabled={!canPrev}>
-          Zurück
-        </button>
+        <button onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={!canPrev}>Zurück</button>
         <span className="chip">{index + 1} / {slides.length}</span>
         <button
-          onClick={() => {
-            if (index < slides.length - 1) setIndex((i) => i + 1);
-            else onFinish && onFinish();
-          }}
+          onClick={() => { if (index < slides.length - 1) setIndex(i => nextIndex(i)); else onFinish && onFinish(); }}
           disabled={!canNext}
         >
           {index < slides.length - 1 ? "Weiter" : "Fertig"}
         </button>
-      </div>
-
-      {/* summary */}
-      <div className="note" style={{ marginTop: 12 }}>
-        <b>Zusammenfassung (live):</b>
-        <div className="sumrow"><span>Modus</span><b>{sel.mode ?? "–"}</b></div>
-        <div className="sumrow"><span>Event</span><b>{sel.event ?? "–"}</b></div>
-        {sel.mode === "Digital & Print" && (
-          <>
-            <div className="sumrow"><span>Gäste</span><b>{sel.guests ?? "–"}</b></div>
-            <div className="sumrow"><span>Format</span><b>{sel.format ?? "–"}</b></div>
-            <div className="sumrow"><span>Druckpaket</span><b>{sel.printpkg ?? "–"}</b></div>
-          </>
-        )}
-        <div className="sumrow"><span>Zubehör</span><b>{sel.accessories.length ? sel.accessories.join(", ") : "–"}</b></div>
-              <hr style={{ margin: "10px 0", borderColor: "rgba(255,255,255,0.15)" }} />
-        <div className="sumrow"><span>Grundpaket</span><b>{BASE_PRICE.toFixed(2)} €</b></div>
-        {sel.mode === "Digital & Print" && (
-          <>
-            <div className="sumrow"><span>Druckpaket</span><b>{sel.printpkg ? (PRINT_PRICES[sel.printpkg as keyof typeof PRINT_PRICES]).toFixed(2) + " €" : "–"}</b></div>
-            <div className="sumrow"><span>Format-Extra</span><b>{sel.format === "Postkarte & Streifen" ? SECOND_LAYOUT_FEE.toFixed(2) + " €" : "0,00 €"}</b></div>
-          </>
-        )}
-        {sel.accessories.length > 0 && (
-          <div style={{ marginTop: 6 }}>
-            <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 4 }}>Zubehör</div>
-            {sel.accessories.map(a => (
-              <div key={a} className="sumrow"><span>{a}</span><b>{(ACCESSORY_PRICES[a] || 0).toFixed(2)} €</b></div>
-            ))}
-          </div>
-        )}
-        <div className="sumrow" style={{ marginTop: 8 }}>
-          <span><b>Gesamt</b></span><b>{computePrice(sel).toFixed(2)} €</b>
-        </div>
       </div>
     </div>
   );

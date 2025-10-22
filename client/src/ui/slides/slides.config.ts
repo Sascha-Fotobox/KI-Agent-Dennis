@@ -1,3 +1,4 @@
+
 import type { Slide } from "./SlideEngine";
 
 export const slides: Slide[] = [
@@ -7,7 +8,7 @@ export const slides: Slide[] = [
     title: "Moin! 👋 Willkommen bei Fobi Fotobox",
     description: "Ich bin Dennis, dein Berater. Hier ist unser Grundpaket – so wie du es aus der Chat-Version kennst:",
     bullets: [
-      "Ausstattung: Spiegelreflexkamera, Studioblitz/Beleuchtung, Touchscreen 15\"",
+      "Ausstattung: Spiegelreflexkamera, Studioblitz/Beleuchtung, Touchscreen 15"",
       "Digitale Fotoflat",
       "Videovorschau (du siehst dich selbst)",
       "Fun‑Filter (SW, Sepia, …)",
@@ -18,7 +19,7 @@ export const slides: Slide[] = [
       "Service: Vorabgespräch per Telefon oder Videomeeting",
       "Service: 24/7 Support",
       "Service: Lieferung/Aufbau/Abbau (20 km inkl., 80 km möglich)",
-      "Zubehörpaket: kleines Paket inkl. (für individuelle Layout‑Gestaltung)"
+      "Zubehörpaket: kleines Paket inkl. (für individuelle Layout‑Gestaltung oder Requisiten oder Hintergrundsystem)"
     ],
     audioSrc: "/audio/slide-welcome.mp3",
   },
@@ -42,7 +43,7 @@ export const slides: Slide[] = [
     id: "guests",
     kind: "guests",
     title: "Gästezahl",
-    description: "Wie viele Gäste erwartet ihr? (relevant für Print)",
+    description: "Wie viele Gäste erwartet ihr?",
     options: ["bis 30", "30–50", "50–120", "120–250", "ab 250"],
     audioSrc: "/audio/slide-guests.mp3",
   },
@@ -58,7 +59,7 @@ export const slides: Slide[] = [
     id: "printpkgs",
     kind: "printpkgs",
     title: "Druckpakete",
-    description: "Wähle dein Druckpaket:",
+    description: "Wähle dein Druckpaket",
     options: ["100", "200", "400", "800", "802"],
     audioSrc: "/audio/slide-printpkgs.mp3",
   },
@@ -66,7 +67,7 @@ export const slides: Slide[] = [
     id: "accessories",
     kind: "accessories",
     title: "Zubehör",
-    description: "Optional: Requisiten, Hintergrundsystem, Layout, Gala-Paket, Audio-Gästebuch (Mehrfachauswahl möglich)",
+    description: "Optional: Requisiten, Hintergrundsystem, Layout, Gala-Paket, Audio-Gästebuch (Mehrfachauswahl möglich) – ein kleines ZUO ist inklusive.",
     options: ["Requisiten", "Hintergrund", "Layout", "Gala-Paket", "Audio-Gästebuch"],
     multi: true,
     audioSrc: "/audio/slide-accessories.mp3",
@@ -75,7 +76,7 @@ export const slides: Slide[] = [
     id: "summary",
     kind: "summary",
     title: "Zusammenfassung",
-    description: "Überprüfe deine Auswahl. Im nächsten Schritt kommt Preis/Anfrage (folgt).",
+    description: "Überprüfe deine Auswahl. Preis folgt live in der Box darunter.",
     audioSrc: "/audio/slide-summary.mp3",
   },
 ];
