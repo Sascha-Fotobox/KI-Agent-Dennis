@@ -1,140 +1,45 @@
 
-:root {
-  --bg: #1e1e1c;
-  --text: #ffffff;
-  --gold: #ccb63f;
-  --muted: rgba(255,255,255,0.65);
-  --soft: rgba(255,255,255,0.08);
-}
-
-* { box-sizing: border-box; }
-
-body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-
-.app { max-width: 1280px; margin: 0 auto; padding: 24px 16px; }
-
-.topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom: 16px; }
-.brandRow { display:flex; align-items:center; gap:12px; }
-.brandName { font-weight: 700; letter-spacing: 0.4px; }
-.hint { color: var(--muted); font-size: 14px; }
-
-.chat { display:flex; flex-direction: column; gap: 16px; }
-
-.bubble {
-  background: var(--soft);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
-  padding: 18px 18px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-}
-
-.sectionTitle { font-weight: 700; margin-bottom: 8px; }
-.btnrow { display:flex; gap:8px; flex-wrap: wrap; align-items: center; }
-.btnrow.wrap { flex-wrap: wrap; }
-
-button {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--gold);
-  padding: 10px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-button:hover { background: rgba(204,182,63,0.1); }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
-button.active { box-shadow: inset 0 0 0 2px var(--gold); }
-
-.chip { border:1px solid var(--gold); padding: 6px 10px; border-radius: 999px; font-size: 12px; color: var(--gold); }
-
-.sumrow { display:flex; justify-content: space-between; gap: 12px; margin-top: 6px; }
-.divider { height:1px; background: rgba(255,255,255,0.14); margin: 10px 0; }
-
-/* === Slides: volle Breite & einheitliche Höhe === */
-.chat .bubble { width: 100%; max-width: none; }
-.bubble .inner, .bubble > * { max-width: none; }
-
-.slideBox { }
+:root { --bg:#1e1e1c; --text:#fff; --gold:#ccb63f; --muted:rgba(255,255,255,.65); --soft:rgba(255,255,255,.08); }
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+.app{max-width:1280px;margin:0 auto;padding:24px 16px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.brandRow{display:flex;align-items:center;gap:12px}.brandName{font-weight:700;letter-spacing:.4px}.hint{color:var(--muted);font-size:14px}
+.chat{display:flex;flex-direction:column;gap:16px}
+.bubble{position:relative;overflow:hidden;background:var(--soft);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.bubble::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(180deg, rgba(204,182,63,.6), rgba(204,182,63,.2));border-top-left-radius:16px;border-bottom-left-radius:16px;pointer-events:none}
+.sectionTitle{font-weight:700;margin-bottom:8px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.btnrow.wrap{flex-wrap:wrap}
+button{background:transparent;color:var(--text);border:1px solid var(--gold);padding:10px 14px;border-radius:999px;cursor:pointer}
+button:hover{background:rgba(204,182,63,.1)} button:disabled{opacity:.5;cursor:not-allowed} button.active{box-shadow:inset 0 0 0 2px var(--gold)}
+.chip{border:1px solid var(--gold);padding:6px 10px;border-radius:999px;font-size:12px;color:var(--gold)}
+.sumrow{display:flex;justify-content:space-between;gap:12px;margin-top:6px}.divider{height:1px;background:rgba(255,255,255,.14);margin:10px 0}
+.chat .bubble{width:100%;max-width:none}.bubble .inner,.bubble>*{max-width:none}
+/* Slide layout */
+.slideBox{}
+.slideInner{animation:slideInSoft 360ms ease-out}
+.slideInner.centered{text-align:center;animation:slideInSoft 360ms ease-out}
+.slideInner.centered .btnrow{justify-content:center}
+.slideInner.centered ul{display:inline-block;text-align:left}
+/* Audio controls inline */
+.audioInline{margin-top:24px;margin-bottom:8px}
+.audioInlineRow{display:flex;justify-content:center;align-items:center;gap:10px}
+.audioBtn{background:var(--gold);color:#1e1e1c;border:none;padding:8px 12px;border-radius:999px;font-weight:600;cursor:pointer}
+.audioBtn:hover{filter:brightness(1.05)} .audioInline audio{display:none}
+/* Sections */
+.sections{display:grid;gap:10px;margin-top:10px}
+.sectionBlock{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px}
+.secTitle{color:var(--gold);font-weight:700;margin-bottom:6px}.secList{margin:0;padding-left:18px}.secList li{margin:3px 0}
+/* Nav row */
+.navrow{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:18px}.navrow .chip{margin:0 6px}
+/* CTA button for consent */
+button.cta{background:var(--gold);color:#1e1e1c;border:none;padding:12px 18px;border-radius:999px;font-weight:700;letter-spacing:.2px;box-shadow:0 8px 20px rgba(204,182,63,.25)}
+button.cta:hover{filter:brightness(1.05)}
+/* Animations */
+@keyframes slideInSoft{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 
+/* Tips layout refinements */
+.sectionBlock + .sectionBlock { margin-top: 24px; }
+.secTitle { color: var(--gold); font-weight: 700; margin-bottom: 8px; font-size: 18px; }
+.secList li { margin: 6px 0; line-height: 1.5; }
 
-
-/* Subtle gold contour on the left of bubbles */
-.bubble { position: relative; overflow: hidden; }
-.bubble::before {
-  content: "";
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 6px;
-  background: linear-gradient(180deg, rgba(204,182,63,0.6), rgba(204,182,63,0.2));
-  border-top-left-radius: 16px;
-  border-bottom-left-radius: 16px;
-  pointer-events: none;
-}
-
-/* Sections styling for the welcome slide */
-.sections { display: grid; gap: 10px; margin-top: 10px; }
-.sectionBlock { background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 12px; }
-.secTitle { color: var(--gold); font-weight: 700; margin-bottom: 6px; }
-.secList { margin: 0; padding-left: 18px; }
-.secList li { margin: 3px 0; }
-
-/* Centered nav row with more offset from content */
-.navrow {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-  margin-top: 18px; /* further away from text/options */
-}
-.navrow .chip { margin: 0 6px; }
-
-
-/* Slide inner layout */
-.slideInner { display: block; }
-.slideInner.centered { text-align: center; }
-.slideInner.centered .btnrow { justify-content: center; }
-.slideInner.centered ul { display: inline-block; text-align: left; } /* lists readable while centered */
-
-
-/* Centered inline audio controls (no container box) */
-.audioInline { margin-top: 24px; margin-bottom: 8px; }
-.audioInlineRow { display: flex; justify-content: center; align-items: center; gap: 10px; }
-.audioBtn {
-  background: var(--gold);
-  color: #1e1e1c;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.audioBtn:hover { filter: brightness(1.05); }
-.audioInline audio { display: none; }
-
-
-/* Fade-in for first/consent screen */
-@keyframes fadeInSoft { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-.slideInner.centered { animation: fadeInSoft 360ms ease-out; }
-
-/* Emphasized gold CTA button */
-button.cta {
-  background: var(--gold);
-  color: #1e1e1c;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 999px;
-  font-weight: 700;
-  letter-spacing: .2px;
-  box-shadow: 0 8px 20px rgba(204,182,63,0.25);
-}
-button.cta:hover { filter: brightness(1.05); }
-
-
-
-/* Slide-in animation for slides */
-@keyframes slideInSoft {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.slideInner { animation: slideInSoft 360ms ease-out; }
-.slideInner.centered { animation: slideInSoft 360ms ease-out; }
