@@ -41,7 +41,7 @@ export function pickIncludedSmall(sel: Selections): string | null {
 function getPrintPrice(sel: Selections): number {
   if (sel.mode !== "Digital & Print" || !sel.printpkg) return 0;
   const raw = parseInt(sel.printpkg, 10);
-  const effective = sel.format === "Streifen" ? Math.round(raw/2) : raw;
+  const effective = sel.format === "Fotostreifen" ? Math.round(raw/2) : raw;
   return PRINT_PRICES[String(effective)] ?? 0;
 }
 
@@ -107,14 +107,10 @@ export default function SlideEngine({  slides, onFinish, onChange, onShowSummary
   return (
     <div className={"slideBox"}>
       <div key={current.id} className={isWelcome ? "slideInner" : "slideInner centered"}>
-        <div className="sectionTitle">{current.title}</div>
-        {current.description && <p className="hint">{current.description}</p>}
-
-        {current.kind === "general" && (
-          <div style={{ marginTop: 12, display: "grid", gap: 14 }}>
-            <div>
-              <div className="sectionTitle">Event</div>
+        <div className="sectionTitle">Mit wie vielen Gästen/Besuchern wird geplant?</div>
               <div className="btnrow wrap">
+        <p className="sectionHint">Schätze grob, damit wir passende Druckmengen empfehlen können.</p>
+        <p className="sectionHint">Bitte wähle die passende Kategorie für deine Veranstaltung.</p>
                 {(current.eventOptions || []).map(opt => (
                   <button key={opt} className={sel.event === opt ? "active" : ""} onClick={() => setSel(s => ({ ...s, event: opt }))}>{opt}</button>
                 ))}
