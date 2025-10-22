@@ -8,7 +8,7 @@ export type Slide = {
   bullets?: string[];
   sections?: { title: string; items: string[] }[];
   audioSrc?: string;
-  kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info";
+  kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info" | "consent";
   options?: string[];
   multi?: boolean;
 };
@@ -82,7 +82,7 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
 
   useEffect(() => { onChange?.(sel); }, [sel, onChange]);
 
-  const needsChoice = ["mode", "event", "guests", "format", "printpkgs"].includes(current.kind || "");
+  const needsChoice = ["mode", "event", "guests", "format", "printpkgs", "consent"].includes(current.kind || "");
   const hasChoice =
     current.kind === "mode" ? !!sel.mode :
     current.kind === "event" ? !!sel.event :
