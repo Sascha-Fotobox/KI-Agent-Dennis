@@ -129,3 +129,12 @@ button.cta {
 }
 button.cta:hover { filter: brightness(1.05); }
 
+
+
+/* Slide-in animation for slides */
+@keyframes slideInSoft {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slideInner { animation: slideInSoft 360ms ease-out; }
+.slideInner.centered { animation: slideInSoft 360ms ease-out; }

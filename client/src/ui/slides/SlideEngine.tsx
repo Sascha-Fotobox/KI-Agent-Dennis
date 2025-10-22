@@ -73,6 +73,9 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
   const [sel, setSel] = useState<Selections>({ accessories: [] });
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const current = slides[index];
+  const nonConsentSlides = slides.filter(s => s.kind !== 'consent');
+  const displayTotal = nonConsentSlides.length;
+  const displayIndex = current.kind === 'consent' ? 0 : (nonConsentSlides.findIndex(s => s.id === current.id) + 1);
   const [isPlaying, setIsPlaying] = useState(false);
   const isWelcome = current.id === 'welcome';
 
@@ -119,7 +122,7 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
 
   return (
     <div className={"slideBox"}>
-      <div className={isWelcome ? "slideInner" : "slideInner centered"}>
+      <div key={current.id} className={isWelcome ? "slideInner" : "slideInner centered"}>
       <div className="sectionTitle">{current.title}</div>
       {current.description && <p className="hint">{current.description}</p>}
 
@@ -184,16 +187,16 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
         </div>
       )}
 
-      <div className="navrow">
+      {current.kind !== "consent" && (<div className="navrow">)
         <button onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={!canPrev}>Zurück</button>
-        <span className="chip">{index + 1} / {slides.length}</span>
+        <span className="chip">{displayIndex} von {displayTotal}</span>
         <button
           onClick={() => { if (index < slides.length - 1) setIndex(i => nextIndex(i)); else onFinish && onFinish(); }}
           disabled={!canNext}
         >
           {index < slides.length - 1 ? "Weiter" : "Fertig"}
         </button>
-      </div>
+      </div>)}
     </div>
   );
 }
