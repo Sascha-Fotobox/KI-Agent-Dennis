@@ -35,6 +35,34 @@ Mit dem Start erklärst du dich damit einverstanden, dass deine Angaben ausschli
       "Bilderversand an der Fotobox (QR‑Code)"
     ]
   },
+  
+{
+  id: "general",
+  kind: "general",
+  title: "Allgemeine Angaben",
+  description: "Was plant ihr – und mit wie vielen Gästen?",
+  eventOptions: ["Hochzeit","Geburtstag","Internes Firmenevent","Abschlussball","Messe","Kundenevent","Sonstiges"],
+  guestOptions: ["bis 30","30–50","50–120","120–250","ab 250"],
+  audioSrc: "/audio/slide-general.mp3"
+},
+  
+{
+  id: "tips",
+  kind: "tips",
+  title: "Tipps zu deiner Auswahl",
+  description: "Kurze Empfehlungen passend zu deinem Event.",
+  audioSrc: "/audio/slide-tips.mp3"
+},
+  {
+    id: "mode",
+    kind: "mode",
+    title: "Wie möchtest du starten?",
+    description: "Wähle den Modus – rein digital oder mit Sofortdrucken vor Ort.",
+    audioSrc: "/audio/slide-digital-print.mp3",
+    options: ["Digital", "Digital & Print"]
+  },
+
+
   {
     title: "Service",
     items: [
@@ -55,30 +83,7 @@ Mit dem Start erklärst du dich damit einverstanden, dass deine Angaben ausschli
 
     audioSrc: "/audio/slide-welcome.mp3",
   },
-  {
-    id: "mode",
-    kind: "mode",
-    title: "Wie möchtest du starten?",
-    description: "Wähle den Modus – rein digital oder mit Sofortdrucken vor Ort.",
-    audioSrc: "/audio/slide-digital-print.mp3",
-    options: ["Digital", "Digital & Print"]
-  },
-  {
-    id: "event",
-    kind: "event",
-    title: "Event",
-    description: "Welches Event plant ihr?",
-    options: ["Hochzeit", "Geburtstag", "Internes Firmenevent", "Abschlussball", "Messe", "Kundenevent", "Sonstiges"],
-    audioSrc: "/audio/slide-event.mp3",
-  },
-  {
-    id: "guests",
-    kind: "guests",
-    title: "Gästezahl",
-    description: "Wie viele Gäste erwartet ihr?",
-    options: ["bis 30", "30–50", "50–120", "120–250", "ab 250"],
-    audioSrc: "/audio/slide-guests.mp3",
-  },
+  
   {
     id: "format",
     kind: "format",

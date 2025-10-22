@@ -8,9 +8,12 @@ export type Slide = {
   bullets?: string[];
   sections?: { title: string; items: string[] }[];
   audioSrc?: string;
-  kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info" | "consent" | undefined | "consent";
+  kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info" | "consent" | "general" | "tips";
   options?: string[];
   multi?: boolean;
+  // for "general"
+  eventOptions?: string[];
+  guestOptions?: string[];
 };
 
 export type Selections = {
@@ -85,11 +88,10 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
 
   useEffect(() => { onChange?.(sel); }, [sel, onChange]);
 
-  const needsChoice = ["mode", "event", "guests", "format", "printpkgs", "consent"].includes(current.kind || "");
+  const needsChoice = ["mode", "general", "format", "printpkgs"].includes(current.kind || "");
   const hasChoice =
     current.kind === "mode" ? !!sel.mode :
-    current.kind === "event" ? !!sel.event :
-    current.kind === "guests" ? !!sel.guests :
+    current.kind === "general" ? (!!sel.event && !!sel.guests) :
     current.kind === "format" ? !!sel.format :
     current.kind === "printpkgs" ? !!sel.printpkg :
     true;
@@ -126,6 +128,53 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
       <div className="sectionTitle">{current.title}</div>
       {current.description && <p className="hint">{current.description}</p>}
 
+      
+{/* RENDER TIPS */}
+{current.kind === "tips" && (
+  <div style={{ marginTop: 10 }}>
+    <div className="sections">
+      <div className="sectionBlock">
+        <div className="secTitle">Tipps zu deiner Auswahl</div>
+        <ul className="secList">
+          {(() => {
+            const e = sel.event || "";
+            const lines: string[] = (
+              e === "Hochzeit" ? [
+                "Beliebt: Streifen oder „Postkarte & Streifen“.",
+                "Empfehlung: individuelles Layout im Hochzeitsstil.",
+                "Requisiten: klassisch/romantisch; Bilder fürs Gästebuch.",
+                "Druckpaket: je nach Gästezahl 400–800."
+              ] : e === "Geburtstag" ? [
+                "Lockerer Mix: Postkartenformat oder Streifen.",
+                "Requisiten peppen die Stimmung auf.",
+                "Bei größeren Runden lieber 400+ Drucke."
+              ] : e === "Internes Firmenevent" ? [
+                "Branding: individuelles Layout mit Firmenlogo.",
+                "Oft sinnvoll: Digital & Print für Social & Giveaways.",
+                "Großbild eignet sich für Gruppenfotos."
+              ] : e === "Abschlussball" ? [
+                "Hohe Frequenz – plane genügend Drucke (800+).",
+                "Streifen sind super fürs Andenken; Postkarte für Gruppen."
+              ] : e === "Messe" ? [
+                "Schneller Ablauf: Digital (QR) funktioniert super.",
+                "Branding/Overlay mit Call-to-Action.",
+                "Optional: Großbild für Aufmerksamkeit."
+              ] : e === "Kundenevent" ? [
+                "Erlebnis im Fokus: schöne Requisiten & Layout.",
+                "Je nach Gästezahl 400–800 Drucke."
+              ] : [
+                "Wähle frei – ich passe die Empfehlung im nächsten Schritt an.",
+                "Bei Fragen: Einfach weiterklicken, die Zusammenfassung zeigt alles transparent."
+              ]
+            );
+            return lines.map((t, i) => <li key={i}>{t}</li>);
+          })()}
+        </ul>
+      </div>
+    </div>
+  </div>
+)}
+
       {current.sections && current.sections.length > 0 && (
         <div className="sections">
           {current.sections.map((sec, i) => (
@@ -141,6 +190,28 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
         <ul style={{ marginTop: 8, paddingLeft: 18 }}>
           {current.bullets.map((b, i) => <li key={i}>{b}</li>)}
         </ul>
+      )}
+
+      {/* RENDER GENERAL */}
+      {current.kind === "general" && (
+        <div style={{ marginTop: 12, display: "grid", gap: 14 }}>
+          <div>
+            <div className="sectionTitle">Event</div>
+            <div className="btnrow wrap">
+              {(current.eventOptions || []).map(opt => (
+                <button key={opt} className={sel.event === opt ? "active" : ""} onClick={() => setSel(s => ({ ...s, event: opt }))}>{opt}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="sectionTitle">Gästezahl</div>
+            <div className="btnrow wrap">
+              {(current.guestOptions || []).map(opt => (
+                <button key={opt} className={sel.guests === opt ? "active" : ""} onClick={() => setSel(s => ({ ...s, guests: opt }))}>{opt}</button>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
       {current.options && current.options.length > 0 && (
@@ -187,7 +258,7 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
         </div>
       )}
 
-      {current.kind !== "consent" && (<div className="navrow">)
+      {current.kind !== "consent" ? <div className="navrow"> : null}
         <button onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={!canPrev}>Zurück</button>
         <span className="chip">{displayIndex} von {displayTotal}</span>
         <button
