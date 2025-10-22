@@ -110,3 +110,22 @@ button.active { box-shadow: inset 0 0 0 2px var(--gold); }
 }
 .audioBtn:hover { filter: brightness(1.05); }
 .audioInline audio { display: none; }
+
+
+/* Fade-in for first/consent screen */
+@keyframes fadeInSoft { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.slideInner.centered { animation: fadeInSoft 360ms ease-out; }
+
+/* Emphasized gold CTA button */
+button.cta {
+  background: var(--gold);
+  color: #1e1e1c;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  box-shadow: 0 8px 20px rgba(204,182,63,0.25);
+}
+button.cta:hover { filter: brightness(1.05); }
+

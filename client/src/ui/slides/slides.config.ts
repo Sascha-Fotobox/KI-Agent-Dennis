@@ -4,6 +4,18 @@ import type
 
 export const slides: Slide[] = [
   {
+      id: "privacy",
+      kind: "consent",
+      title: "Moin! Ich bin dein Fotobox-Berater von Fobi Fotobox.",
+      description: `Dieses Tool unterstützt dich dabei, das passende Fotobox-Paket zu finden – ganz entspannt und unverbindlich.
+
+Bitte gib hier keine persönlichen Daten ein, wie vollständige Namen, Telefonnummern oder E-Mail-Adressen. Für die Beratung reichen allgemeine Angaben völlig aus – zum Beispiel die Gästezahl oder der Veranstaltungsort.
+
+Mit dem Start erklärst du dich damit einverstanden, dass deine Angaben ausschließlich zur Beratung und Preisfindung verarbeitet werden.`,
+      options: ["Ich stimme den Datenschutzbedingungen zu und starte die Beratung"]
+    },
+
+  {
     id: "welcome",
     kind: "info",
     title: "Moin! 👋 Willkommen bei Fobi Fotobox",
@@ -87,7 +99,7 @@ export const slides: Slide[] = [
     id: "accessories",
     kind: "accessories",
     title: "Zubehör",
-    description: "Optional: Requisiten, Hintergrundsystem, Layout, Gala-Paket, Audio-Gästebuch (Mehrfachauswahl möglich) – ein kleines ZUO ist inklusive.",
+    description: "Ein kleines Zubehörpaket (Requisiten, Hintergrundsystem oder individuelle Layout‑Gestaltung) ist inklusive und wird in der Zusammenfassung berücksichtigt.",
     options: ["Requisiten", "Hintergrund", "Layout", "Gala-Paket", "Audio-Gästebuch"],
     multi: true,
     audioSrc: "/audio/slide-accessories.mp3",

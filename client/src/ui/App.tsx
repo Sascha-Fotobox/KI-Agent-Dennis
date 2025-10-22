@@ -58,7 +58,7 @@ export default function App() {
           <div className="brandName">{brand}</div>
           <div className="hint">Dein digitaler Berater – Dennis</div>
         </div>
-        {k?.disclaimer && <div className="hint">{k.disclaimer}</div>}
+        </div>}
       </header>
 
       <main className="chat">

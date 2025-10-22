@@ -8,7 +8,7 @@ export type Slide = {
   bullets?: string[];
   sections?: { title: string; items: string[] }[];
   audioSrc?: string;
-  kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info" | "consent";
+  kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info" | "consent" | undefined | "consent";
   options?: string[];
   multi?: boolean;
 };
@@ -153,7 +153,7 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
             return (
               <button
                 key={opt}
-                className={active ? "active" : ""}
+                className={(current.kind === "consent" ? "cta" : "") + (active ? " active" : "")}
                 onClick={() => {
                   if (current.kind === "consent") { setIndex(i => Math.min(slides.length - 1, i + 1)); return; }
                   if (current.kind === "accessories" || current.multi) toggleMulti(opt);
