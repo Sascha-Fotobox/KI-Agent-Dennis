@@ -6,11 +6,7 @@ export type Slide = {
   description?: string;
   bullets?: string[];
   audioSrc?: string;
-  // optional custom renderer for interactive content
-  render?: (ctx: {
-    mode: "Digital" | "Digital & Print" | undefined;
-    setMode: (m: "Digital" | "Digital & Print") => void;
-  }) => React.ReactNode;
+  kind?: "mode"; // special renderer handled inside SlideEngine
 };
 
 type Props = {
@@ -52,9 +48,18 @@ export default function SlideEngine({ slides, onFinish }: Props) {
       )}
 
       {/* Optional interactive content (e.g., Mode selection) */}
-      {current.render && (
-        <div style={{ marginTop: 12 }}>
-          {current.render({ mode, setMode })}
+      {/* Special slides handled internally */}
+      {current.kind === "mode" && (
+        <div className="btnrow" style={{ marginTop: 12 }}>
+          {(["Digital", "Digital & Print"] as const).map((m) => (
+            <button
+              key={m}
+              className={mode === m ? "active" : ""}
+              onClick={() => setMode(m)}
+            >
+              {m}
+            </button>
+          ))}
         </div>
       )}
 

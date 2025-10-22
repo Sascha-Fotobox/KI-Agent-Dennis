@@ -1,4 +1,4 @@
-import { Slide } from "./SlideEngine";
+import type { Slide } from "./SlideEngine";
 
 export const slides: Slide[] = [
   {
@@ -16,18 +16,10 @@ export const slides: Slide[] = [
   },
   {
     id: "mode",
+    kind: "mode",
     title: "Wie möchtest du starten?",
     description: "Wähle den Modus – rein digital oder mit Sofortdrucken vor Ort.",
-    audioSrc: "/audio/slide-digital-print.mp3",
-    render: ({ mode, setMode }) => (
-      <div className="btnrow">
-        {(["Digital", "Digital & Print"] as const).map((m) => (
-          <button key={m} className={mode === m ? "active" : ""} onClick={() => setMode(m)}>
-            {m}
-          </button>
-        ))}
-      </div>
-    ),
+    audioSrc: "/audio/slide-digital-print.mp3"
   },
   {
     id: "event",
