@@ -8,7 +8,7 @@ export const slides: Slide[] = [
     title: "Moin! 👋 Willkommen bei Fobi Fotobox",
     description: "Ich bin Dennis, dein Berater. Hier ist unser Grundpaket – so wie du es aus der Chat-Version kennst:",
     bullets: [
-      "Ausstattung: Spiegelreflexkamera, Studioblitz/Beleuchtung, Touchscreen 15"",
+      "Ausstattung: Spiegelreflexkamera, Studioblitz/Beleuchtung, Touchscreen 15\"",
       "Digitale Fotoflat",
       "Videovorschau (du siehst dich selbst)",
       "Fun‑Filter (SW, Sepia, …)",
