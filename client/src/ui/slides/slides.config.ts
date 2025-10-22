@@ -36,7 +36,7 @@ export const slides: Slide[] = [
   {
     title: "Zubehörpaket",
     items: [
-      "Ein Paket (Requisiten, Hintergrund oder individuelle Layout‑Gestaltung) ist bereits inklusive. Die Auswahl erfolgt beim Zubehör."
+      "Ein kleines Zubehörpaket (Requisiten, Hintergrund oder individuelle Layout‑Gestaltung) ist inklusive. Die konkrete Auswahl triffst du später im Zubehör-Schritt."
     ]
   }
 ],

@@ -73,6 +73,7 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
   const [sel, setSel] = useState<Selections>({ accessories: [] });
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const current = slides[index];
+  const isWelcome = current.id === 'welcome';
 
   useEffect(() => {
     if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
@@ -116,7 +117,8 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
   }
 
   return (
-    <div className="slideBox">
+    <div className={"slideBox"}>
+      <div className={isWelcome ? "slideInner" : "slideInner centered"}>
       <div className="sectionTitle">{current.title}</div>
       {current.description && <p className="hint">{current.description}</p>}
 
@@ -163,18 +165,18 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
         </div>
       )}
 
+      
+
+      </div>
+      {/* audio above nav, centered */}
       {current.audioSrc && (
-        <div className="audioBox">
-          <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 6 }}>Erklärung anhören</div>
-          <div className="audioControls">
+        <div className="audioInline">
+          <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 6, textAlign: "center" }}>Erklärung anhören</div>
+          <div className="audioInlineRow">
             <button type="button" className="audioBtn" onClick={() => {
               if (!audioRef.current) return;
-              if (audioRef.current.paused) {
-                audioRef.current.play();
-              } else {
-                audioRef.current.pause();
-              }
-            }}>Play/Pause</button>
+              if (audioRef.current.paused) audioRef.current.play(); else audioRef.current.pause();
+            }}>Play / Pause</button>
             <audio ref={audioRef} src={current.audioSrc} />
           </div>
         </div>
