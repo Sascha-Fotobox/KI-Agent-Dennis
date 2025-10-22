@@ -73,6 +73,7 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
   const [sel, setSel] = useState<Selections>({ accessories: [] });
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const current = slides[index];
+  const [isPlaying, setIsPlaying] = useState(false);
   const isWelcome = current.id === 'welcome';
 
   useEffect(() => {
@@ -154,6 +155,7 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
                 key={opt}
                 className={active ? "active" : ""}
                 onClick={() => {
+                  if (current.kind === "consent") { setIndex(i => Math.min(slides.length - 1, i + 1)); return; }
                   if (current.kind === "accessories" || current.multi) toggleMulti(opt);
                   else chooseSingle(opt);
                 }}
@@ -176,8 +178,8 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
             <button type="button" className="audioBtn" onClick={() => {
               if (!audioRef.current) return;
               if (audioRef.current.paused) audioRef.current.play(); else audioRef.current.pause();
-            }}>Play / Pause</button>
-            <audio ref={audioRef} src={current.audioSrc} />
+            }}>{isPlaying ? "❚❚ Pause" : "► Abspielen"}</button>
+            <audio ref={audioRef} src={current.audioSrc} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
           </div>
         </div>
       )}

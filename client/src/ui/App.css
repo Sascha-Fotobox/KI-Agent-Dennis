@@ -53,9 +53,9 @@ button.active { box-shadow: inset 0 0 0 2px var(--gold); }
 .chat .bubble { width: 100%; max-width: none; }
 .bubble .inner, .bubble > * { max-width: none; }
 
-.slideBox { min-height: 620px; }
-@media (max-width: 900px) { .slideBox { min-height: 580px; } }
-@media (max-width: 600px) { .slideBox { min-height: 540px; } }
+.slideBox { }
+
+
 
 
 /* Subtle gold contour on the left of bubbles */
@@ -84,7 +84,7 @@ button.active { box-shadow: inset 0 0 0 2px var(--gold); }
   justify-content: center;
   align-items: center;
   gap: 14px;
-  margin-top: 26px; /* further away from text/options */
+  margin-top: 18px; /* further away from text/options */
 }
 .navrow .chip { margin: 0 6px; }
 
@@ -97,7 +97,7 @@ button.active { box-shadow: inset 0 0 0 2px var(--gold); }
 
 
 /* Centered inline audio controls (no container box) */
-.audioInline { margin-top: 14px; }
+.audioInline { margin-top: 24px; margin-bottom: 8px; }
 .audioInlineRow { display: flex; justify-content: center; align-items: center; gap: 10px; }
 .audioBtn {
   background: var(--gold);
