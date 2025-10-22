@@ -32,25 +32,6 @@ Mit dem Start erklärst du dich damit einverstanden, dass deine Angaben ausschli
           "Bilderversand an der Fotobox (QR‑Code)"
         ]
       },
-      {
-        title: "Service",
-        items: [
-          "Alle Fotos/Videos mit Overlay",
-          "Online‑Galerie (mit Passwort)",
-          "Vorabgespräch per Telefon oder Videomeeting",
-          "24/7 Support",
-          "Lieferung/Aufbau/Abbau (20 km inkl., 80 km möglich)"
-        ]
-      },
-      {
-        title: "Zubehörpaket",
-        items: [
-          "Ein kleines Zubehörpaket (Requisiten, Hintergrundsystem oder individuelle Layout‑Gestaltung) ist inklusive und wird in der Zusammenfassung berücksichtigt."
-        ]
-      }
-    ],
-    audioSrc: "/audio/slide-welcome.mp3"
-  },
   {
     id: "general",
     kind: "general",
