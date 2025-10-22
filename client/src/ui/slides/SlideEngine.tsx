@@ -287,17 +287,16 @@ Beim Einsatz von zwei Drucksystemen und einer betreuten Fotobox kann die Druckze
                   className={(current.kind === "consent" ? "cta" : "") + (active ? " active" : "")}
                   onClick={() => {
                     if (current.kind === "consent") { setIndex(i => Math.min(slides.length - 1, i + 1)); return; }
-                    if (current.kind === "accessories" || current.multi) { const has = sel.accessories.includes(opt); setSel(s => ({ ...s, accessories: has ? s.accessories.filter(x => x !== opt) : [...s.accessories, opt] })); }
-                    else { chooseSingle(opt); }
+                    if (current.kind === "accessories" || current.multi) {
+                      const has = sel.accessories.includes(opt);
+                      setSel(s => ({ ...s, accessories: has ? s.accessories.filter(x => x !== opt) : [...s.accessories, opt] }));
+                    } else {
+                      chooseSingle(opt);
+                    }
                   }}
                 >{opt}</button>
               );
             })}
-          </div>
-        )}
-
-        {/* Audio above nav, centered */}
-        {current.audioSrc && (
           <div className="audioInline">
             <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 6, textAlign: "center" }}>Erklärung anhören</div>
             <div className="audioInlineRow">
