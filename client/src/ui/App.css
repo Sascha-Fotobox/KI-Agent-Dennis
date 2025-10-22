@@ -56,3 +56,58 @@ button.active { box-shadow: inset 0 0 0 2px var(--gold); }
 .slideBox { min-height: 620px; }
 @media (max-width: 900px) { .slideBox { min-height: 580px; } }
 @media (max-width: 600px) { .slideBox { min-height: 540px; } }
+
+
+/* Subtle gold contour on the left of bubbles */
+.bubble { position: relative; overflow: hidden; }
+.bubble::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, rgba(204,182,63,0.6), rgba(204,182,63,0.2));
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  pointer-events: none;
+}
+
+/* Compact dark audio box with gold button */
+.audioBox {
+  margin-top: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(204,182,63,0.35);
+  border-radius: 12px;
+  padding: 10px 12px;
+  max-width: 360px; /* smaller, not dominant */
+}
+.audioControls { display: flex; align-items: center; gap: 10px; }
+.audioBtn {
+  background: var(--gold);
+  color: #1e1e1c;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.audioBtn:hover { filter: brightness(1.05); }
+.audioBox audio {
+  display: none; /* we hide native controls; custom button toggles playback */
+}
+
+/* Sections styling for the welcome slide */
+.sections { display: grid; gap: 10px; margin-top: 10px; }
+.sectionBlock { background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 12px; }
+.secTitle { color: var(--gold); font-weight: 700; margin-bottom: 6px; }
+.secList { margin: 0; padding-left: 18px; }
+.secList li { margin: 3px 0; }
+
+/* Centered nav row with more offset from content */
+.navrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 26px; /* further away from text/options */
+}
+.navrow .chip { margin: 0 6px; }

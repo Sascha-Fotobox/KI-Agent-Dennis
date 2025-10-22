@@ -6,6 +6,7 @@ export type Slide = {
   title: string;
   description?: string;
   bullets?: string[];
+  sections?: { title: string; items: string[] }[];
   audioSrc?: string;
   kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info";
   options?: string[];
@@ -119,6 +120,17 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
       <div className="sectionTitle">{current.title}</div>
       {current.description && <p className="hint">{current.description}</p>}
 
+      {current.sections && current.sections.length > 0 && (
+        <div className="sections">
+          {current.sections.map((sec, i) => (
+            <div className="sectionBlock" key={i}>
+              <div className="secTitle">{sec.title}</div>
+              <ul className="secList">{sec.items.map((it, j) => <li key={j}>{it}</li>)}</ul>
+            </div>
+          ))}
+        </div>
+      )}
+
       {current.bullets && current.bullets.length > 0 && (
         <ul style={{ marginTop: 8, paddingLeft: 18 }}>
           {current.bullets.map((b, i) => <li key={i}>{b}</li>)}
@@ -152,13 +164,23 @@ export default function SlideEngine({ slides, onFinish, onChange }: Props) {
       )}
 
       {current.audioSrc && (
-        <div style={{ marginTop: 12 }}>
+        <div className="audioBox">
           <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 6 }}>Erklärung anhören</div>
-          <audio ref={audioRef} controls src={current.audioSrc} style={{ width: "100%" }} />
+          <div className="audioControls">
+            <button type="button" className="audioBtn" onClick={() => {
+              if (!audioRef.current) return;
+              if (audioRef.current.paused) {
+                audioRef.current.play();
+              } else {
+                audioRef.current.pause();
+              }
+            }}>Play/Pause</button>
+            <audio ref={audioRef} src={current.audioSrc} />
+          </div>
         </div>
       )}
 
-      <div className="btnrow" style={{ marginTop: 16, alignItems: "center" }}>
+      <div className="navrow">
         <button onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={!canPrev}>Zurück</button>
         <span className="chip">{index + 1} / {slides.length}</span>
         <button
