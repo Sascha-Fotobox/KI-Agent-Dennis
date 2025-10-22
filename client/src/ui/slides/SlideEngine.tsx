@@ -8,7 +8,7 @@ export type Slide = {
   bullets?: string[];
   sections?: { title: string; items: string[] }[];
   audioSrc?: string;
-  kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info" | "consent" | "general" | "tips";
+  kind?: "mode" | "event" | "guests" | "format" | "printpkgs" | "accessories" | "summary" | "info" | "consent" | "general" | "tips" | "tipsprint";
   options?: string[];
   multi?: boolean;
   eventOptions?: string[];
@@ -24,11 +24,7 @@ export type Selections = {
   accessories: string[];
 };
 
-type Props = {
-  slides: Slide[];
-  onFinish?: () => void;
-  onChange?: (s: Selections) => void;
-};
+type Props = { slides: Slide[]; onFinish?: () => void; onChange?: (s: Selections) => void; onShowSummary?: (show: boolean) => void; };
 
 const BASE_PRICE = 350;
 const PRINT_PRICES: Record<string, number> = { "100": 70, "200": 100, "400": 150, "800": 250, "802": 280 };
@@ -60,12 +56,13 @@ export function computePrice(sel: Selections) {
   return total;
 }
 
-export default function SlideEngine({ slides, onFinish, onChange }: Props) {
+export default function SlideEngine({ slides, onFinish, onChange, onShowSummary }: Props) {
   const [index, setIndex] = useState(0);
   const [sel, setSel] = useState<Selections>({ accessories: [] });
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const current = slides[index];
+  useEffect(() => { onShowSummary?.(current.kind !== "consent"); }, [index]);
   const isWelcome = current.id === 'welcome';
 
   const nonConsentSlides = slides.filter(s => s.kind !== 'consent');
