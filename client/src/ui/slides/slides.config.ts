@@ -88,7 +88,7 @@ Mit dem Start erklärst du dich damit einverstanden, dass deine Angaben ausschli
     kind: "format",
     title: "Druckformat",
     description: "Welches Druckformat möchtet ihr?",
-    options: ["Postkarte", "Streifen", "Postkarte & Streifen", "Großbild"],
+    options: ["Postkartenformat","Fotostreifen","Großbild"],
     audioSrc: "/audio/slide-format.mp3"
   },
   {
