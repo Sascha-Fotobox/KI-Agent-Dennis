@@ -1,1 +1,0 @@
-Dieses Projekt wurde auf Slides umgestellt. Siehe src/ui/slides/ und App.tsx.
