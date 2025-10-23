@@ -41,7 +41,7 @@ export function pickIncludedSmall(sel: Selections): string | null {
 function getPrintPrice(sel: Selections): number {
   if (sel.mode !== "Digital & Print" || !sel.printpkg) return 0;
   const raw = parseInt(sel.printpkg, 10);
-  const effective = sel.format === "Fotostreifen" ? Math.round(raw/2) : raw;
+  const effective = sel.format === "Streifen" ? Math.round(raw/2) : raw;
   return PRINT_PRICES[String(effective)] ?? 0;
 }
 
@@ -101,51 +101,37 @@ export default function SlideEngine({  slides, onFinish, onChange, onShowSummary
     }
   }
   function toggleMulti(value: string) {
-  setSel(s => {
-    const has = s.accessories.includes(value);
-    return { ...s, accessories: has ? s.accessories.filter(x => x !== value) : [...s.accessories, value] };
-  });
-}
+    setSel(s => { const has = s.accessories.includes(value); return { ...s, accessories: has ? s.accessories.filter(x => x !== value) : [...s.accessories, value] }; });
+  }
 
   return (
     <div className={"slideBox"}>
       <div key={current.id} className={isWelcome ? "slideInner" : "slideInner centered"}>
-        {/* GENERAL (Event + Guests) */}
+        <div className="sectionTitle">{current.title}</div>
+        {current.description && <p className="hint">{current.description}</p>}
+
         {current.kind === "general" && (
-          <div style={{ marginTop: 12, display: "grid", gap: 28 }}>
+          <div style={{ marginTop: 12, display: "grid", gap: 14 }}>
             <div>
-              <div className="sectionTitle">Für welches Event wird eine Fotobox gesucht?</div>
-              <p className="sectionHint">Bitte wähle die passende Kategorie für deine Veranstaltung.</p>
+              <div className="sectionTitle">Event</div>
               <div className="btnrow wrap">
-                {(current.eventOptions || []).map((opt) => (
-                  <button
-                    key={opt}
-                    className={sel.event === opt ? "active" : ""}
-                    onClick={() => setSel((s) => ({ ...s, event: opt }))}
-                  >
-                    {opt}
-                  </button>
+                {(current.eventOptions || []).map(opt => (
+                  <button key={opt} className={sel.event === opt ? "active" : ""} onClick={() => setSel(s => ({ ...s, event: opt }))}>{opt}</button>
                 ))}
               </div>
             </div>
             <div>
-              <div className="sectionTitle">Mit wie vielen Gästen/Besuchern wird geplant?</div>
-              <p className="sectionHint">Schätze grob, damit wir passende Druckmengen empfehlen können.</p>
+              <div className="sectionTitle">Gästezahl</div>
               <div className="btnrow wrap">
-                {(current.guestOptions || []).map((opt) => (
-                  <button
-                    key={opt}
-                    className={sel.guests === opt ? "active" : ""}
-                    onClick={() => setSel((s) => ({ ...s, guests: opt }))}
-                  >
-                    {opt}
-                  </button>
+                {(current.guestOptions || []).map(opt => (
+                  <button key={opt} className={sel.guests === opt ? "active" : ""} onClick={() => setSel(s => ({ ...s, guests: opt }))}>{opt}</button>
                 ))}
               </div>
             </div>
           </div>
         )}
-{current.sections && current.sections.length > 0 && (
+
+        {current.sections && current.sections.length > 0 && (
           <div className="sections">
             {current.sections.map((sec, i) => (
               <div className="sectionBlock" key={i}>
@@ -305,57 +291,36 @@ Beim Einsatz von zwei Drucksystemen und einer betreuten Fotobox kann die Druckze
                   className={(current.kind === "consent" ? "cta" : "") + (active ? " active" : "")}
                   onClick={() => {
                     if (current.kind === "consent") { setIndex(i => Math.min(slides.length - 1, i + 1)); return; }
-                    if (current.kind === "accessories" || current.multi) {
-                      const has = sel.accessories.includes(opt);
-                      setSel(s => ({ ...s, accessories: has ? s.accessories.filter(x => x !== opt) : [...s.accessories, opt] }));
-                    } else {
-                      chooseSingle(opt);
-                    }
+                    if (current.kind === "accessories" || current.multi) { const has = sel.accessories.includes(opt); setSel(s => ({ ...s, accessories: has ? s.accessories.filter(x => x !== opt) : [...s.accessories, opt] })); }
+                    else { chooseSingle(opt); }
                   }}
                 >{opt}</button>
               );
             })}
-          {/* Audio above nav, centered */}
-          {current.audioSrc && (
-            <div className="audioInline">
-              <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 6, textAlign: "center" }}>Erklärung anhören</div>
-              <div className="audioInlineRow">
-                <button type="button" className="audioBtn" onClick={() => {
-                  if (!audioRef.current) return;
-                  if (audioRef.current.paused) audioRef.current.play(); else audioRef.current.pause();
-                }}>{isPlaying ? "❚❚ Pause" : "► Abspielen"}</button>
-                <audio
-                  ref={audioRef}
-                  src={current.audioSrc || undefined}
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                />
-              </div>
-            </div>
-          )}
+          </div>
+        )}
 
-          {current.kind !== "consent" ? (
-            <div className="navrow">
-              <button onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={!canPrev}>Zurück</button>
-              <span className="chip">{displayIndex} von {displayTotal}</span>
-              <button onClick={() => {
-                const wantsPrint = sel.mode === "Digital & Print" || sel.mode === "Print" || sel.mode === "Fotobox mit Sofortdruck";
-                const nextIndex = (() => {
-                  let j = index + 1;
-                  while (j < slides.length) {
-                    const k = slides[j]?.kind;
-                    const shouldSkip = !wantsPrint && (k === "tipsprint" || k === "format" || k === "printpkgs");
-                    if (!shouldSkip) break;
-                    j++;
-                  }
-                  return j;
-                })();
-                if (nextIndex < slides.length) setIndex(nextIndex);
-                else onFinish?.();
-              }} className="next">{index < slides.length - 1 ? "Weiter" : "Fertig"}</button>
+        {/* Audio above nav, centered */}
+        {current.audioSrc && (
+          <div className="audioInline">
+            <div className="sectionTitle" style={{ fontSize: 14, marginBottom: 6, textAlign: "center" }}>Erklärung anhören</div>
+            <div className="audioInlineRow">
+              <button type="button" className="audioBtn" onClick={() => {
+                if (!audioRef.current) return; if (audioRef.current.paused) audioRef.current.play(); else audioRef.current.pause();
+              }}>{isPlaying ? "❚❚ Pause" : "► Abspielen"}</button>
+              <audio ref={audioRef} src={current.audioSrc} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
             </div>
-          ) : null}
-        </div>
+          </div>
+        )}
+
+        {current.kind !== "consent" ? (
+          <div className="navrow">
+            <button onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={!canPrev}>Zurück</button>
+            <span className="chip">{displayIndex} von {displayTotal}</span>
+            <button onClick={() => { if (index < slides.length - 1) setIndex(i => nextIndex(i)); else onFinish && onFinish(); }} disabled={!canNext}>{index < slides.length - 1 ? "Weiter" : "Fertig"}</button>
+          </div>
+        ) : null}
       </div>
-    );
+    </div>
+  );
 }
